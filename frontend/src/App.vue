@@ -28,15 +28,11 @@
   </div>
 </template>
 
+
 <script lang="ts">
-import Vue from 'vue';
 import './assets/css/tailwind.css';
 import draggable from "vuedraggable";
 import TaskCard from "./components/TaskCard.vue";
-import VueHotkey from 'v-hotkey';
-
-
-Vue.use(VueHotkey);
 
 export default {
   name: "App",
@@ -46,10 +42,6 @@ export default {
   },
   created() {
     this.focusChanged();
-    //document.addEventListener('focusin', this.focusChanged)
-  },
-  beforeDestroy() {
-    //document.removeEventListener('focusin', this.focusChanged)
   },
   data() {
     return {
@@ -176,9 +168,6 @@ export default {
     };
   },
   methods: {
-    test() {
-      alert("test");
-    },
     focusChanged () {
       window.addEventListener('keyup', (event) => {
 
@@ -205,8 +194,6 @@ export default {
         }
       });
     },
-  },
-  computed: {
   },
 };
 </script>
