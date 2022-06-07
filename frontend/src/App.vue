@@ -17,7 +17,7 @@
                 :task="task"
                 :lists="lists"
                 class="mt-3 cursor-move"
-                :value="list.id"
+                :value="list._id"
                 autofocus
             ></task-card>
             <!-- </transition-group> -->
@@ -33,6 +33,11 @@
 import './assets/css/tailwind.css';
 import draggable from "vuedraggable";
 import TaskCard from "./components/TaskCard.vue";
+import axios from "axios";
+
+const listsURL = 'http://localhost:3000/lists';
+const updateURL = 'http://localhost:3000/lists/update';
+
 
 export default {
   name: "App",
@@ -40,155 +45,84 @@ export default {
     draggable,
     TaskCard,
   },
-  created() {
-    this.focusChanged();
-  },
   data() {
     return {
-      lists: [
-        {
-          id: 1,
-          title: "Backlog",
-          tasks: [
-            {
-              id: 1,
-              title: "Add discount code to checkout page",
-              date: "Sep 14",
-              type: "Feature Request",
-            },
-            {
-              id: 2,
-              title: "Provide documentation on integrations",
-              date: "Sep 12",
-            },
-            {
-              id: 3,
-              title: "Design shopping cart dropdown",
-              date: "Sep 9",
-              type: "Design",
-            },
-            {
-              id: 4,
-              title: "Add discount code to checkout page",
-              date: "Sep 14",
-              type: "Feature Request",
-            },
-            {
-              id: 5,
-              title: "Test checkout flow",
-              date: "Sep 15",
-              type: "QA",
-            }
-          ]
-        },
-        {
-          id: 2,
-          title: "In Progress",
-          tasks: [
-            {
-              id: 6,
-              title: "Design shopping cart dropdown",
-              date: "Sep 9",
-              type: "Design",
-            },
-            {
-              id: 7,
-              title: "Add discount code to checkout page",
-              date: "Sep 14",
-              type: "Feature Request",
-            },
-            {
-              id: 8,
-              title: "Provide documentation on integrations",
-              date: "Sep 12",
-              type: "Backend",
-            }
-          ]
-        },
-        {
-          id: 3,
-          title: "Review",
-          tasks: [
-            {
-              id: 9,
-              title: "Provide documentation on integrations",
-              date: "Sep 12",
-            },
-            {
-              id: 10,
-              title: "Design shopping cart dropdown",
-              date: "Sep 9",
-              type: "Design",
-            },
-            {
-              id: 11,
-              title: "Add discount code to checkout page",
-              date: "Sep 14",
-              type: "Feature Request",
-            },
-            {
-              id: 12,
-              title: "Design shopping cart dropdown",
-              date: "Sep 9",
-              type: "Design",
-            },
-            {
-              id: 13,
-              title: "Add discount code to checkout page",
-              date: "Sep 14",
-              type: "Feature Request",
-            }
-          ]
-        },
-        {
-          id: 4,
-          title: "Done",
-          tasks: [
-            {
-              id: 14,
-              title: "Add discount code to checkout page",
-              date: "Sep 14",
-              type: "Feature Request",
-            },
-            {
-              id: 15,
-              title: "Design shopping cart dropdown",
-              date: "Sep 9",
-              type: "Design",
-            },
-            {
-              id: 16,
-              title: "Add discount code to checkout page",
-              date: "Sep 14",
-              type: "Feature Request",
-            }
-          ]
-        }
-      ],
+      lists: [],
     };
+  },
+  created() {
+    this.focusChanged();
+    axios.get(listsURL).then(res => {
+      this.lists = res.data;
+    }).catch(error => {
+      console.log(error)
+    });
   },
   methods: {
     focusChanged () {
-      window.addEventListener('keyup', (event) => {
+      window.addEventListener('keydown', (event) => {
+        let synth = window.speechSynthesis;
 
         if (event.altKey && event.key == 'ArrowRight') {
           const listId = event.target.attributes.value.value,
               task = event.target.__vue__.task;
           this.lists.forEach((list, li) => {
-            if(list.id == listId){
+            if(list._id == listId){
               this.lists[li+1].tasks.push(task);
               this.lists[li].tasks.splice(this.lists[li].tasks.indexOf(task), 1);
+
+              let utterThis1 = new SpeechSynthesisUtterance('Card: "' + task.title + '"' + ' moved from ' + this.lists[li].title + ' to ' + this.lists[li+1].title);
+              utterThis1.lang = 'en-US';
+              synth.speak(utterThis1);
+
+              axios.patch(updateURL + "/" + this.lists[li+1]._id, this.lists[li+1])
+                  .then(function (response) {
+                    console.log(response);
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
+
+              axios.patch(updateURL + "/" + list._id, this.lists[li])
+                  .then(function (response) {
+                    console.log(response);
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
             }
           });
+
+
         }
 
         if (event.altKey && event.key == 'ArrowLeft') {
           const listId = event.target.attributes.value.value,
               task = event.target.__vue__.task;
           this.lists.forEach((list, li) => {
-            if(list.id == listId){
+            if(list._id == listId){
               this.lists[li-1].tasks.push(task);
               this.lists[li].tasks.splice(this.lists[li].tasks.indexOf(task), 1);
+
+              let utterThis2 = new SpeechSynthesisUtterance('Card: "' + task.title + '"' + ' moved from ' + this.lists[li].title + ' to ' + this.lists[li-1].title);
+              utterThis2.lang = 'en-US';
+              synth.speak(utterThis2);
+
+              axios.patch(updateURL + "/" + list._id, this.lists[li])
+                  .then(function (response) {
+                    console.log(response);
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
+
+              axios.patch(updateURL + "/" + this.lists[li-1]._id, this.lists[li-1])
+                  .then(function (response) {
+                    console.log(response);
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
             }
           });
         }

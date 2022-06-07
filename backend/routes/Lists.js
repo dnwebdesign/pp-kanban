@@ -34,8 +34,8 @@ router.delete('/delete/:id', async (req, res) => {
 
 // Update a list
 router.patch('/update/:id', async (req, res) => {
-    const q = await List.updateOne({_id: req.params.id}, {$set: req.body});
-
+    console.log(req.body);
+    const q = await List.updateOne({ _id: req.params.id  }, {$set: req.body});
     res.json(q);
 });
 
