@@ -7,7 +7,9 @@
             :key="list.title"
             class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4"
         >
-          <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm">{{list.title}}</p>
+          <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm"></p>
+          <label-edit v-bind:text="text" :placeholder="list.title" v-on:text-updated-blur="textUpdateCallbackBlur" v-on:text-updated-enter="textUpdateCallbackEnter"></label-edit>
+
           <!-- Draggable component comes from vuedraggable. It provides drag & drop functionality -->
           <draggable :list="list.tasks" :animation="200" ghost-class="ghost-card" group="tasks">
             <!-- Each element from here will be draggable and animated. Note :key is very important here to be unique both for draggable and animations to be smooth & consistent. -->
@@ -34,6 +36,7 @@ import './assets/css/tailwind.css';
 import draggable from "vuedraggable";
 import TaskCard from "./components/TaskCard.vue";
 import axios from "axios";
+import LabelEdit from 'label-edit';
 
 const listsURL = 'http://localhost:3000/lists';
 const updateURL = 'http://localhost:3000/lists/update';
@@ -44,6 +47,7 @@ export default {
   components: {
     draggable,
     TaskCard,
+    LabelEdit,
   },
   data() {
     return {
