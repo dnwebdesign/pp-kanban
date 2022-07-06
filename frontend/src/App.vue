@@ -8,7 +8,7 @@
             class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4"
         >
           <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm"></p>
-          <label-edit v-bind:text="text" :placeholder="list.title" v-on:text-updated-blur="textUpdateCallbackBlur" v-on:text-updated-enter="textUpdateCallbackEnter"></label-edit>
+          <label-edit v-bind:text="list.title" :placeholder="list.title"  tabindex="0"></label-edit>
 
           <!-- Draggable component comes from vuedraggable. It provides drag & drop functionality -->
           <draggable :list="list.tasks" :animation="200" ghost-class="ghost-card" group="tasks">
@@ -37,6 +37,8 @@ import draggable from "vuedraggable";
 import TaskCard from "./components/TaskCard.vue";
 import axios from "axios";
 import LabelEdit from 'label-edit';
+import { mapState } from 'vuex';
+
 
 const listsURL = 'http://localhost:3000/lists';
 const updateURL = 'http://localhost:3000/lists/update';
@@ -54,6 +56,7 @@ export default {
       lists: [],
     };
   },
+
   created() {
     this.focusChanged();
     axios.get(listsURL).then(res => {
@@ -75,25 +78,9 @@ export default {
               this.lists[li+1].tasks.push(task);
               this.lists[li].tasks.splice(this.lists[li].tasks.indexOf(task), 1);
 
-              let utterThis1 = new SpeechSynthesisUtterance('Card: "' + task.title + '"' + ' moved from ' + this.lists[li].title + ' to ' + this.lists[li+1].title);
-              utterThis1.lang = 'en-US';
-              synth.speak(utterThis1);
-
-              axios.patch(updateURL + "/" + this.lists[li+1]._id, this.lists[li+1])
-                  .then(function (response) {
-                    console.log(response);
-                  })
-                  .catch(function (error) {
-                    console.log(error);
-                  });
-
-              axios.patch(updateURL + "/" + list._id, this.lists[li])
-                  .then(function (response) {
-                    console.log(response);
-                  })
-                  .catch(function (error) {
-                    console.log(error);
-                  });
+              //let utterThis1 = new SpeechSynthesisUtterance('Card: "' + task.title + '"' + ' moved from ' + this.lists[li].title + ' to ' + this.lists[li+1].title);
+              //utterThis1.lang = 'en-US';
+              //synth.speak(utterThis1);
             }
           });
 
@@ -108,30 +95,32 @@ export default {
               this.lists[li-1].tasks.push(task);
               this.lists[li].tasks.splice(this.lists[li].tasks.indexOf(task), 1);
 
-              let utterThis2 = new SpeechSynthesisUtterance('Card: "' + task.title + '"' + ' moved from ' + this.lists[li].title + ' to ' + this.lists[li-1].title);
-              utterThis2.lang = 'en-US';
-              synth.speak(utterThis2);
-
-              axios.patch(updateURL + "/" + list._id, this.lists[li])
-                  .then(function (response) {
-                    console.log(response);
-                  })
-                  .catch(function (error) {
-                    console.log(error);
-                  });
-
-              axios.patch(updateURL + "/" + this.lists[li-1]._id, this.lists[li-1])
-                  .then(function (response) {
-                    console.log(response);
-                  })
-                  .catch(function (error) {
-                    console.log(error);
-                  });
+              //let utterThis2 = new SpeechSynthesisUtterance('Card: "' + task.title + '"' + ' moved from ' + this.lists[li].title + ' to ' + this.lists[li-1].title);
+              //utterThis2.lang = 'en-US';
+              //synth.speak(utterThis2);
             }
           });
         }
       });
     },
+  },
+  watch: {
+    lists: {
+      handler (val, oldVal) {
+        console.log("lists changed.");
+        val.forEach((list, li) => {
+          axios.patch(updateURL + "/" + list._id, list)
+              .then(function (response) {
+                console.log(response);
+              })
+              .catch(function (error) {
+                //console.log(error);
+              });
+        });
+      },
+
+      deep: true
+    }
   },
 };
 </script>
