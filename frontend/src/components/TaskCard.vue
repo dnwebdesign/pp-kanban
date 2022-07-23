@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white shadow rounded px-3 pt-3 pb-5 border border-white" :value="task.id" tabindex="0" @keydown.enter="showModal = true" @keydown.esc="showModal = false">
-    <Modal :show="showModal" @close="showModal = false" :task="task" :lists="lists"/>
+  <div class="bg-white shadow rounded px-3 pt-3 pb-5 border border-white" :value="task._id" tabindex="0" @keydown.enter="showModal = true" @keydown.esc="showModal = false">
+    <Modal :show="showModal" @close="showModal = false" :task="task" :list="list" :lists="lists"/>
     <div @click="showModal = true">
       <div class="flex justify-between">
         <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm">{{task.title}}</p>
@@ -12,8 +12,6 @@
         >
       </div>
       <div class="flex mt-4 justify-between items-center">
-        <span class="text-sm text-gray-600">{{task.date}}</span>
-        <badge v-if="task.type" :color="badgeColor">{{task.type}}</badge>
       </div>
     </div>
   </div>
@@ -29,6 +27,10 @@ export default {
   },
   props: {
     task: {
+      type: Object,
+      default: () => ({})
+    },
+    list: {
       type: Object,
       default: () => ({})
     },
