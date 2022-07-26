@@ -1,12 +1,14 @@
 <script>
 import ToDos from './ToDos';
-import axios from "axios";
+import axios from "axios"
+import LabelEdit from 'label-edit';
 
 const addToDoListURL = 'http://localhost:3000/lists/addTodoList';
 
 export default {
   components: {
-    ToDos
+    ToDos,
+    LabelEdit,
   },
   data() {
     return {
@@ -50,11 +52,11 @@ export default {
             console.log(response);
           })
           .catch(function (error) {
-            if (error.response){
+            if (error.response) {
               console.log(error.response);
-            } else if(error.request){
+            } else if (error.request) {
               console.log(error.request);
-            } else if(error.message){
+            } else if (error.message) {
               console.log(error.message);
             }
           });
@@ -69,7 +71,7 @@ export default {
       <div class="modal-wrapper" @click="$emit('close')">
         <div class="modal-container" @click.stop>
           <div class="modal-header">
-            <slot name="header">{{task.title}}</slot>
+            <slot name="header">{{ task.title }}</slot>
           </div>
 
           <div class="modal-body">
@@ -80,14 +82,23 @@ export default {
               </option>
             </select>
 
-            <button :id="'btn-add-todolist-' + task._id" class="mt-3 bg-gray-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded" @click="addTodoListDialog(task)">Todo-Liste hinzufügen</button>
-            <div class="add-todolist hidden" :id="'add-todolist-' + task._id">
+            <button :id="'btn-add-todolist-' + task._id"
+                    class="mt-3 bg-gray-400 hover:bg-blue-500 text-black py-1 px-3 rounded"
+                    @click="addTodoListDialog(task)">Todo-Liste hinzufügen
+            </button>
+            <div :id="'add-todolist-' + task._id" class="add-todolist hidden">
               <textarea></textarea>
-              <button class="mt-3 bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded" @click="cancelAddTodoList(task)">Abbrechen</button>
-              <button class="mt-3 bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded" @click="addTodoList(task)">Todo-List hinzufügen</button>
+              <button class="mt-3 bg-blue-500 hover:bg-blue-700 text-black py-1 px-3 rounded"
+                      @click="addTodoList(task)">Todo-Liste speichern
+              </button>
+              <button class="mt-3 bg-red-500 hover:bg-red-700 text-black py-1 px-3 rounded"
+                      @click="cancelAddTodoList(task)">Abbrechen
+              </button>
             </div>
+
             <div v-for="todoList in task.todoLists">
-              {{ todoList.title }}
+              <label-edit :pkey="task._id" :placeholder="todoList.title" tabindex="0" v-bind:text="todoList.title"
+                          v-on:text-updated-blur=""></label-edit>
               <to-dos :todoList="todoList"></to-dos>
             </div>
           </div>
@@ -96,9 +107,10 @@ export default {
 
             <slot name="footer">
               <button
-                  class="modal-default-button"
+                  class="modal-default-button mt-3 bg-gray-400 hover:bg-blue-500 text-black py-1 px-3 rounded"
                   @click="$emit('close')"
-              >OK</button>
+              >Zurück zum Board
+              </button>
             </slot>
           </div>
         </div>
@@ -113,11 +125,11 @@ export default {
   z-index: 9998;
   top: 0;
   left: 0;
+  display: table;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: table;
   transition: opacity 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-wrapper {
@@ -129,10 +141,10 @@ export default {
   width: 600px;
   margin: 0px auto;
   padding: 20px 30px;
-  background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   transition: all 0.3s ease;
+  border-radius: 2px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
 }
 
 .modal-header h3 {
