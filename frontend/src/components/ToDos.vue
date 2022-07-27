@@ -10,6 +10,7 @@
                class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                type="checkbox" @click="updateTodo(todoList._id, todo)">
         <label :for="'todolist-'+todo._id" class="ml-2 text-gray-900 dark:text-gray-300">{{ todo.content }}</label>
+        <button @click="deleteTodo(todo)">Löschen</button>
       </li>
     </ul>
     <quick-edit v-model="newTodoValue" buttonOkText="To-Do speichern"
@@ -24,7 +25,8 @@ import axios from "axios";
 import ProgressBar from 'vuejs-progress-bar';
 
 const addToDoURL = 'http://localhost:3000/lists/addTodo',
-    updateToDoURL = 'http://localhost:3000/lists/updateTodo';
+    updateToDoURL = 'http://localhost:3000/lists/updateTodo',
+    deleteToDoURL = 'http://localhost:3000/lists/deleteTodo';
 
 export default {
   components: {
@@ -110,6 +112,29 @@ export default {
             }
           });
       this.countCheckedTodos(todoListId);
+    },
+    deleteTodo(todo) {
+      console.log(this.todoList.todos);
+      if (confirm("Willst du " + todo.content + " wirklich löschen?")) {
+        const indexOfObject = this.todoList.todos.findIndex(object => {
+          return object._id === todo._id;
+        });
+        this.todoList.todos.splice(indexOfObject, 1);
+        axios.patch(deleteToDoURL + "/" + todo._id, todo)
+            .then(function (response) {
+              console.log(response);
+            })
+            .catch(function (error) {
+              if (error.response) {
+                console.log(error.response);
+              } else if (error.request) {
+                console.log(error.request);
+              } else if (error.message) {
+                console.log(error.message);
+              }
+            });
+      }
+      this.countCheckedTodos(this.$props.todoList._id);
     },
     countCheckedTodos(todoListId) {
       let checkboxes = document.querySelectorAll('#todolist-' + todoListId + ' input[type="checkbox"]').length,
