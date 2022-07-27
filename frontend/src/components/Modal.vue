@@ -13,6 +13,7 @@ export default {
   data() {
     return {
       todoLists: [],
+      newTodolistValue: '',
     };
   },
   props: {
@@ -33,18 +34,9 @@ export default {
   created() {
   },
   methods: {
-    addTodoListDialog(task) {
-      document.getElementById("add-todolist-" + task._id).style.display = "block";
-      document.getElementById("btn-add-todolist-" + task._id).style.display = "none";
-      document.querySelector("#add-todolist-" + task._id + " textarea").focus();
-    },
-    cancelAddTodoList(task) {
-      document.getElementById("btn-add-todolist-" + task._id).style.display = "block";
-      document.getElementById("add-todolist-" + task._id).style.display = "none";
-    },
     addTodoList(task) {
       let todoList = {
-        title: '' + document.querySelector("#add-todolist-" + task._id + " textarea").value,
+        title: this.newTodolistValue,
       };
       task.todoLists.push(todoList);
       axios.put(addToDoListURL + "/" + task._id, todoList)
@@ -82,19 +74,11 @@ export default {
               </option>
             </select>
 
-            <button :id="'btn-add-todolist-' + task._id"
-                    class="mt-3 bg-gray-400 hover:bg-blue-500 text-black py-1 px-3 rounded"
-                    @click="addTodoListDialog(task)">Todo-Liste hinzufügen
-            </button>
-            <div :id="'add-todolist-' + task._id" class="add-todolist hidden">
-              <textarea></textarea>
-              <button class="mt-3 bg-blue-500 hover:bg-blue-700 text-black py-1 px-3 rounded"
-                      @click="addTodoList(task)">Todo-Liste speichern
-              </button>
-              <button class="mt-3 bg-red-500 hover:bg-red-700 text-black py-1 px-3 rounded"
-                      @click="cancelAddTodoList(task)">Abbrechen
-              </button>
-            </div>
+
+            <quick-edit v-model="newTodolistValue" buttonOkText="Todo-Liste speichern"
+                        @input="addTodoList(task)">
+              Todo-Liste hinzufügen
+            </quick-edit>
 
             <div v-for="todoList in task.todoLists">
               <label-edit :pkey="task._id" :placeholder="todoList.title" tabindex="0" v-bind:text="todoList.title"

@@ -12,19 +12,10 @@
         <label :for="todo._id" class="ml-2 text-gray-900 dark:text-gray-300">{{ todo.content }}</label>
       </li>
     </ul>
-    <button :id="'btn-add-todo-' + todoList._id"
-            class="mt-3 bg-gray-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded"
-            @click="addTodoDialog(todoList)">ToDo hinzufügen
-    </button>
-    <div :id="'add-todo-' + todoList._id" class="add-todo hidden">
-      <textarea></textarea>
-      <button class="mt-3 bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded" @click="cancelAddTodo(todoList)">
-        Abbrechen
-      </button>
-      <button class="mt-3 bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded" @click="addTodo(todoList)">
-        Todo hinzufügen
-      </button>
-    </div>
+    <quick-edit v-model="newTodoValue" buttonOkText="To-Do speichern"
+                @input="addTodo(todoList)">
+      To-Do hinzufügen
+    </quick-edit>
   </div>
 </template>
 <script>
@@ -73,22 +64,14 @@ export default {
           progressPadding: 0,
           type: 'line'
         }
-      }
+      },
+      newTodoValue: '',
     }
   },
   methods: {
-    addTodoDialog(todoList) {
-      document.getElementById("add-todo-" + todoList._id).style.display = "block";
-      document.getElementById("btn-add-todo-" + todoList._id).style.display = "none";
-      document.querySelector("#add-todo-" + todoList._id + " textarea").focus();
-    },
-    cancelAddTodo(todoList) {
-      document.getElementById("btn-add-todo-" + todoList._id).style.display = "block";
-      document.getElementById("add-todo-" + todoList._id).style.display = "none";
-    },
     addTodo(todoList) {
       let todo = {
-        content: '' + document.querySelector("#add-todo-" + todoList._id + " textarea").value,
+        content: this.newTodoValue,
       };
       todoList.todos.push(todo);
       axios.put(addToDoURL + "/" + todoList._id, todo)

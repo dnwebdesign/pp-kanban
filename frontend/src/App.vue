@@ -40,7 +40,9 @@ import TaskCard from "./components/TaskCard.vue";
 import axios from "axios";
 import LabelEdit from 'label-edit';
 import QuickEdit from 'vue-quick-edit';
+import Vue from 'vue';
 
+Vue.component('quick-edit', QuickEdit);
 
 const listsURL = 'http://localhost:3000/lists',
     updateURL = 'http://localhost:3000/lists/update',
@@ -55,7 +57,6 @@ export default {
     draggable,
     TaskCard,
     LabelEdit,
-    QuickEdit,
   },
   data() {
     return {
