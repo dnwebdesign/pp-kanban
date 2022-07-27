@@ -77,7 +77,7 @@ export default {
       let todo = {
         content: this.newTodoValue,
       };
-      todoList.todos.push(todo);
+      this.todoList.todos.push(todo);
       axios.put(addToDoURL + "/" + todoList._id, todo)
           .then(function (response) {
             console.log(response);
@@ -91,6 +91,7 @@ export default {
               console.log(error.message);
             }
           });
+      this.countCheckedTodos(this.$props.todoList._id);
     },
     updateTodo(todoListId, todo) {
       let isChecked = document.querySelector('#todolist-' + todo._id).checked;

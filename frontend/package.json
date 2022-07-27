@@ -1,25 +1,25 @@
 {
-  "name": "pp-kanban",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
-  },
-  "dependencies": {
-    "axios": "^0.27.2",
-    "label-edit": "^0.1.1",
-    "vue": "^2.6.12",
-    "vue-quick-edit": "^1.4.0",
-    "vue-template-compiler": "^2.6.14",
-    "vuedraggable": "^2.24.3",
-    "vuejs-progress-bar": "^1.2.8",
-    "vuex": "^3.1.1"
-  },
-  "devDependencies": {
-    "@vue/cli-service": "~5.0.0",
-    "autoprefixer": "^10.4.7",
-    "postcss": "^8.4.14",
-    "tailwindcss": "^1.4.0"
-  }
+    "name": "pp-kanban",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build"
+    },
+    "dependencies": {
+        "axios": "^0.27.2",
+        "label-edit": "^0.1.1",
+        "vue": "^2.6.12",
+        "vue-quick-edit": "^1.4.0",
+        "vue-template-compiler": "^2.6.14",
+        "vuedraggable": "^2.24.3",
+        "vuejs-progress-bar": "^1.2.8",
+        "vuex": "^3.1.1"
+    },
+    "devDependencies": {
+        "@vue/cli-service": "~5.0.0",
+        "autoprefixer": "^10.4.7",
+        "postcss": "^8.4.14",
+        "tailwindcss": "^1.4.0"
+    }
 }
