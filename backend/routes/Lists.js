@@ -6,8 +6,6 @@ const {Task} = require('../models/Tasks');
 const {TodoList} = require("../models/TodoLists");
 const {Todo} = require("../models/Todos");
 
-console.log(List);
-
 // Get all lists
 router.get('/', async (req, res) => {
     const lists = await List.find().populate({
@@ -33,13 +31,6 @@ router.post('/new', async (req, res) => {
     const savedList = await newList.save();
 
     res.json(savedList);
-});
-
-// Get specific list
-router.get('/get/:id', async (req, res) => {
-    const q = await List.findById({_id: req.params.id});
-
-    res.json(q);
 });
 
 // Delete a list
@@ -82,7 +73,7 @@ router.post("/addTask/:id", (req, res) => {
     });
 });
 
-// Add a ToDo-List
+// Add a todolist to a task
 router.put("/addTodoList/:id", (req, res) => {
 
     Task.findById(req.params.id, async function (err, result) {
@@ -108,7 +99,7 @@ router.put("/addTodoList/:id", (req, res) => {
     });
 });
 
-// Add a ToDo
+// Add a todo to a todolist
 router.put("/addTodo/:id", (req, res) => {
 
     TodoList.findById(req.params.id, async function (err, result) {
@@ -134,20 +125,10 @@ router.put("/addTodo/:id", (req, res) => {
     });
 });
 
-// Update a ToDo
+// Update a todo
 router.patch('/updateTodo/:id', async (req, res) => {
     console.log(req.body);
     const q = await Todo.updateOne({_id: req.params.id}, {$set: req.body});
-    res.json(q);
-});
-
-
-// Get random list
-router.get('/random', async (req, res) => {
-    const count = await List.countDocuments();
-    const random = Math.floor(Math.random() * count);
-    const q = await List.findOne().skip(random);
-
     res.json(q);
 });
 
