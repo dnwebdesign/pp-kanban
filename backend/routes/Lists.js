@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const { List } = require('../models/Lists');
-const { Task } = require('../models/Tasks');
-const { TodoList } = require("../models/TodoLists");
-const { Todo } = require("../models/Todos");
+const {List} = require('../models/Lists');
+const {Task} = require('../models/Tasks');
+const {TodoList} = require("../models/TodoLists");
+const {Todo} = require("../models/Todos");
 
 console.log(List);
 
@@ -37,14 +37,14 @@ router.post('/new', async (req, res) => {
 
 // Get specific list
 router.get('/get/:id', async (req, res) => {
-    const q = await List.findById({ _id: req.params.id });
+    const q = await List.findById({_id: req.params.id});
 
     res.json(q);
 });
 
 // Delete a list
 router.delete('/delete/:id', async (req, res) => {
-    const result = await List.findByIdAndDelete({ _id: req.params.id });
+    const result = await List.findByIdAndDelete({_id: req.params.id});
 
     res.json(result);
 });
@@ -52,24 +52,23 @@ router.delete('/delete/:id', async (req, res) => {
 // Update a list
 router.patch('/update/:id', async (req, res) => {
     console.log(req.body);
-    const q = await List.updateOne({ _id: req.params.id  }, {$set: req.body});
+    const q = await List.updateOne({_id: req.params.id}, {$set: req.body});
     res.json(q);
 });
 
 // Add a task to a list
 router.post("/addTask/:id", (req, res) => {
 
-    List.findById(req.params.id, async function(err, result) {
+    List.findById(req.params.id, async function (err, result) {
         if (!err) {
-            if (!result){
+            if (!result) {
                 res.sendStatus(404).send('List was not found').end();
-            }
-            else{
+            } else {
                 let newTask = new Task(req.body);
                 await newTask.save();
                 result.tasks.push(newTask._id);
                 result.markModified('tasks');
-                result.save(function(saveerr, saveresult) {
+                result.save(function (saveerr, saveresult) {
                     if (!saveerr) {
                         res.status(200).send(saveresult);
                     } else {
@@ -86,17 +85,16 @@ router.post("/addTask/:id", (req, res) => {
 // Add a ToDo-List
 router.put("/addTodoList/:id", (req, res) => {
 
-    Task.findById(req.params.id, async function(err, result) {
+    Task.findById(req.params.id, async function (err, result) {
         if (!err) {
-            if (!result){
+            if (!result) {
                 res.sendStatus(404).send('Task was not found').end();
-            }
-            else{
+            } else {
                 let newTodoList = new TodoList(req.body);
                 await newTodoList.save();
                 result.todoLists.push(newTodoList._id);
                 result.markModified('tasks');
-                result.save(function(saveerr, saveresult) {
+                result.save(function (saveerr, saveresult) {
                     if (!saveerr) {
                         res.status(200).send(saveresult);
                     } else {
@@ -113,17 +111,16 @@ router.put("/addTodoList/:id", (req, res) => {
 // Add a ToDo
 router.put("/addTodo/:id", (req, res) => {
 
-    TodoList.findById(req.params.id, async function(err, result) {
+    TodoList.findById(req.params.id, async function (err, result) {
         if (!err) {
-            if (!result){
+            if (!result) {
                 res.sendStatus(404).send('Task was not found').end();
-            }
-            else{
+            } else {
                 let newTodo = new Todo(req.body);
                 await newTodo.save();
                 result.todos.push(newTodo._id);
                 result.markModified('tasks');
-                result.save(function(saveerr, saveresult) {
+                result.save(function (saveerr, saveresult) {
                     if (!saveerr) {
                         res.status(200).send(saveresult);
                     } else {
@@ -135,6 +132,13 @@ router.put("/addTodo/:id", (req, res) => {
             res.status(400).send(err.message);
         }
     });
+});
+
+// Update a ToDo
+router.patch('/updateTodo/:id', async (req, res) => {
+    console.log(req.body);
+    const q = await Todo.updateOne({_id: req.params.id}, {$set: req.body});
+    res.json(q);
 });
 
 
