@@ -31,8 +31,6 @@ export default {
       default: () => ({})
     },
   },
-  created() {
-  },
   methods: {
     addTodoList(task) {
       let todoList = {
@@ -52,8 +50,8 @@ export default {
               console.log(error.message);
             }
           });
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -83,7 +81,9 @@ export default {
             <div v-for="todoList in task.todoLists">
               <label-edit :pkey="task._id" :placeholder="todoList.title" tabindex="0" v-bind:text="todoList.title"
                           v-on:text-updated-blur=""></label-edit>
-              <to-dos :todoList="todoList"></to-dos>
+              <keep-alive>
+                <to-dos :key="todoList._id" :todoList="todoList"></to-dos>
+              </keep-alive>
             </div>
           </div>
 

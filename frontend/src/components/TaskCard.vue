@@ -1,14 +1,17 @@
 <template>
-  <div class="bg-white shadow rounded px-3 pt-3 pb-5 border border-white" :value="task._id" tabindex="0" @keydown.enter="showModal = true" @keydown.esc="showModal = false">
-    <Modal :show="showModal" @close="showModal = false" :task="task" :list="list" :lists="lists"/>
+  <div :value="task._id" class="bg-white shadow rounded px-3 pt-3 pb-5 border border-white" tabindex="0"
+       @keydown.enter="showModal = true" @keydown.esc="showModal = false">
+    <keep-alive>
+      <Modal :list="list" :lists="lists" :show="showModal" :task="task" @close="showModal = false"/>
+    </keep-alive>
     <div @click="showModal = true">
       <div class="flex justify-between">
-        <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm">{{task.title}}</p>
+        <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm">{{ task.title }}</p>
 
         <img
-          class="w-6 h-6 rounded-full ml-3"
-          src="https://pickaface.net/gallery/avatar/unr_sample_161118_2054_ynlrg.png"
-          alt="Avatar"
+            alt="Avatar"
+            class="w-6 h-6 rounded-full ml-3"
+            src="https://pickaface.net/gallery/avatar/unr_sample_161118_2054_ynlrg.png"
         >
       </div>
       <div class="flex mt-4 justify-between items-center">

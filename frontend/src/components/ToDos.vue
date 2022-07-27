@@ -8,7 +8,7 @@
       <li>
         <input :id="todo._id" v-model="todo.done" :checked="todo.done"
                class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-               type="checkbox" @click="countCheckedTodos(todoList)">
+               type="checkbox" @click="countCheckedTodos(todoList._id)">
         <label :for="todo._id" class="ml-2 text-gray-900 dark:text-gray-300">{{ todo.content }}</label>
       </li>
     </ul>
@@ -68,6 +68,9 @@ export default {
       newTodoValue: '',
     }
   },
+  activated() {
+    this.countCheckedTodos(this.$props.todoList._id);
+  },
   methods: {
     addTodo(todoList) {
       let todo = {
@@ -88,15 +91,12 @@ export default {
             }
           });
     },
-    countCheckedTodos(todoList) {
-      console.log('#todolist-' + todoList._id + ' input[type="checkbox"]');
-      let checkboxes = document.querySelectorAll('#todolist-' + todoList._id + ' input[type="checkbox"]').length,
-          checked = document.querySelectorAll('#todolist-' + todoList._id + ' input[type="checkbox"]:checked').length;
-      console.log("Checkboxen: ", checkboxes);
-      console.log("Checked: ", checked);
+    countCheckedTodos(todoListId) {
+      let checkboxes = document.querySelectorAll('#todolist-' + todoListId + ' input[type="checkbox"]').length,
+          checked = document.querySelectorAll('#todolist-' + todoListId + ' input[type="checkbox"]:checked').length;
 
       this.progress = Math.round(100 / checkboxes * checked);
     }
-  }
+  },
 };
 </script>
