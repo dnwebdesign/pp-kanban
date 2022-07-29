@@ -1,9 +1,61 @@
+<template>
+  <Transition name="modal">
+    <div v-if="show" class="modal-mask">
+      <div class="modal-wrapper" @click="$emit('close')">
+        <div class="modal-container" @click.stop>
+          <div class="modal-header">
+            <slot name="header">{{ task.title }}</slot>
+          </div>
+
+          <div class="modal-body">
+            Verschieben nach:
+            <select>
+              <option v-for="list in lists" :value="list.title">
+                {{ list.title }}
+              </option>
+            </select>
+
+            <quick-edit v-model="newTodolistValue" buttonOkText="Todo-Liste speichern"
+                        @input="addTodoList(task)">
+              Todo-Liste hinzufügen
+            </quick-edit>
+
+            <div v-for="todoList in task.todoLists">
+              <h1>{{ todoList.title }}</h1>
+              <quick-edit v-model="newTodolistValue" buttonOkText="Umbenennung speichern"
+                          @input="updateTodoList(todoList)">
+                Umbenennen
+              </quick-edit>
+              <button @click="deleteTodoList(todoList)">Löschen</button>
+              <keep-alive>
+                <to-dos :key="todoList._id" :todoList="todoList"></to-dos>
+              </keep-alive>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer">
+              <button
+                  class="modal-default-button mt-3 bg-gray-400 hover:bg-blue-500 text-black py-1 px-3 rounded"
+                  @click="$emit('close')"
+              >Zurück zum Board
+              </button>
+            </slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+</template>
+
 <script>
 import ToDos from './ToDos';
 import axios from "axios"
 import LabelEdit from 'label-edit';
 
-const addToDoListURL = 'http://localhost:3000/lists/addTodoList';
+const addToDoListURL = 'http://localhost:3000/lists/addTodoList',
+    updateToDoListURL = 'http://localhost:3000/lists/updateTodoList',
+    deleteToDoListURL = 'http://localhost:3000/lists/deleteTodoList';
 
 export default {
   components: {
@@ -36,7 +88,7 @@ export default {
       let todoList = {
         title: this.newTodolistValue,
       };
-      task.todoLists.push(todoList);
+      this.task.todoLists.push(todoList);
       axios.put(addToDoListURL + "/" + task._id, todoList)
           .then(function (response) {
             console.log(response);
@@ -51,57 +103,46 @@ export default {
             }
           });
     },
+    updateTodoList(todoList) {
+      todoList.title = this.newTodolistValue;
+      axios.patch(updateToDoListURL + "/" + todoList._id, todoList)
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            if (error.response) {
+              console.log(error.response);
+            } else if (error.request) {
+              console.log(error.request);
+            } else if (error.message) {
+              console.log(error.message);
+            }
+          });
+    },
+    deleteTodoList(todoList) {
+      if (confirm("Willst du " + todoList.title + " wirklich löschen? Dadurch werden auch alle Aufgaben in der Todo-Liste gelöscht.")) {
+        const indexOfObject = this.task.todoLists.findIndex(object => {
+          return object._id === todoList._id;
+        });
+        this.task.todoLists.splice(indexOfObject, 1);
+        axios.patch(deleteToDoListURL + "/" + todoList._id, todoList)
+            .then(function (response) {
+              console.log(response);
+            })
+            .catch(function (error) {
+              if (error.response) {
+                console.log(error.response);
+              } else if (error.request) {
+                console.log(error.request);
+              } else if (error.message) {
+                console.log(error.message);
+              }
+            });
+      }
+    },
   },
 }
 </script>
-
-<template>
-  <Transition name="modal">
-    <div v-if="show" class="modal-mask">
-      <div class="modal-wrapper" @click="$emit('close')">
-        <div class="modal-container" @click.stop>
-          <div class="modal-header">
-            <slot name="header">{{ task.title }}</slot>
-          </div>
-
-          <div class="modal-body">
-            Verschieben nach:
-            <select>
-              <option v-for="list in lists" :value="list.title">
-                {{ list.title }}
-              </option>
-            </select>
-
-
-            <quick-edit v-model="newTodolistValue" buttonOkText="Todo-Liste speichern"
-                        @input="addTodoList(task)">
-              Todo-Liste hinzufügen
-            </quick-edit>
-
-            <div v-for="todoList in task.todoLists">
-              <label-edit :pkey="task._id" :placeholder="todoList.title" tabindex="0" v-bind:text="todoList.title"
-                          v-on:text-updated-blur=""></label-edit>
-              <keep-alive>
-                <to-dos :key="todoList._id" :todoList="todoList"></to-dos>
-              </keep-alive>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-
-            <slot name="footer">
-              <button
-                  class="modal-default-button mt-3 bg-gray-400 hover:bg-blue-500 text-black py-1 px-3 rounded"
-                  @click="$emit('close')"
-              >Zurück zum Board
-              </button>
-            </slot>
-          </div>
-        </div>
-      </div>
-    </div>
-  </Transition>
-</template>
 
 <style>
 .modal-mask {

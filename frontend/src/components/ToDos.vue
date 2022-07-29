@@ -4,21 +4,22 @@
         :options="options"
         :value="this.progress"
     ></progress-bar>
-    <ul v-for="todo in todoList.todos" :id="'todolist-' + todoList._id">
+    <ul v-for="todo in mutatedTodoList.todos" :id="'todolist-' + mutatedTodoList._id">
       <li>
         <input :id="'todolist-'+todo._id" v-model="todo.done" :checked="todo.done"
                class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-               type="checkbox" @click="updateTodo(todoList._id, todo)">
+               type="checkbox" @click="updateTodo(mutatedTodoList._id, todo, false, $event.target.checked)">
         <label :for="'todolist-'+todo._id" class="ml-2 text-gray-900 dark:text-gray-300">{{ todo.content }}</label>
         <quick-edit v-model="newTodoValue" buttonOkText="To-Do speichern"
-                    @input="updateTodo(todoList._id, todo)">
+                    @input="updateTodo(mutatedTodoList._id, todo, true, todo.done, $event.target)"
+                    @show="newTodoValue = todo.content">
           Editieren
         </quick-edit>
         <button @click="deleteTodo(todo)">Löschen</button>
       </li>
     </ul>
-    <quick-edit v-model="newTodoValue" buttonOkText="To-Do speichern"
-                @input="addTodo(todoList)">
+    <quick-edit v-model="newTodoValue" buttonOkText="To-Do speichern" @input="addTodo(mutatedTodoList)"
+                @show="newTodoValue = ' '">
       To-Do hinzufügen
     </quick-edit>
   </div>
@@ -30,7 +31,8 @@ import ProgressBar from 'vuejs-progress-bar';
 
 const addToDoURL = 'http://localhost:3000/lists/addTodo',
     updateToDoURL = 'http://localhost:3000/lists/updateTodo',
-    deleteToDoURL = 'http://localhost:3000/lists/deleteTodo';
+    deleteToDoURL = 'http://localhost:3000/lists/deleteTodo',
+    getTodoListURL = 'http://localhost:3000/lists/getTodoList';
 
 export default {
   components: {
@@ -43,7 +45,7 @@ export default {
     },
   },
   computed: {},
-  data() {
+  data: function () {
     return {
       progress: 0,
       options: {
@@ -73,18 +75,28 @@ export default {
         }
       },
       newTodoValue: '',
+      mutatedTodoList: this.todoList,
     }
   },
   activated() {
-    this.countCheckedTodos(this.$props.todoList._id);
+    this.countCheckedTodos(this.mutatedTodoList._id);
   },
   methods: {
-    addTodo(todoList) {
+    async getTodoList(todoList) {
+      await axios.get(getTodoListURL + "/" + todoList._id).then(res => {
+        this.mutatedTodoList = res.data;
+      }).catch(error => {
+        console.log(error)
+      });
+    },
+    async addTodo(todoList) {
       let todo = {
         content: this.newTodoValue,
+        done: false,
       };
-      this.todoList.todos.push(todo);
-      axios.put(addToDoURL + "/" + todoList._id, todo)
+      this.newTodoValue = '';
+      this.mutatedTodoList.todos.push(todo);
+      await axios.put(addToDoURL + "/" + todoList._id, todo)
           .then(function (response) {
             console.log(response);
           })
@@ -97,12 +109,16 @@ export default {
               console.log(error.message);
             }
           });
-      this.countCheckedTodos(this.$props.todoList._id);
+      this.countCheckedTodos(this.mutatedTodoList._id);
+      this.getTodoList(todoList);
     },
-    updateTodo(todoListId, todo) {
-      let isChecked = document.querySelector('#todolist-' + todo._id).checked;
+    updateTodo(todoListId, todo, nameChanged, isChecked, val) {
+      console.log("val is: ", val);
       todo.done = isChecked;
-      todo.content = this.newTodoValue;
+      if (nameChanged === true) {
+        todo.content = this.newTodoValue;
+      }
+      this.newTodoValue = '';
       axios.patch(updateToDoURL + "/" + todo._id, todo)
           .then(function (response) {
             console.log(response);
@@ -119,12 +135,12 @@ export default {
       this.countCheckedTodos(todoListId);
     },
     deleteTodo(todo) {
-      console.log(this.todoList.todos);
+      console.log(this.mutatedTodoList.todos);
       if (confirm("Willst du " + todo.content + " wirklich löschen?")) {
-        const indexOfObject = this.todoList.todos.findIndex(object => {
+        const indexOfObject = this.mutatedTodoList.todos.findIndex(object => {
           return object._id === todo._id;
         });
-        this.todoList.todos.splice(indexOfObject, 1);
+        this.mutatedTodoList.todos.splice(indexOfObject, 1);
         axios.patch(deleteToDoURL + "/" + todo._id, todo)
             .then(function (response) {
               console.log(response);
@@ -139,7 +155,7 @@ export default {
               }
             });
       }
-      this.countCheckedTodos(this.$props.todoList._id);
+      this.countCheckedTodos(this.mutatedTodoList._id);
     },
     countCheckedTodos(todoListId) {
       let checkboxes = document.querySelectorAll('#todolist-' + todoListId + ' input[type="checkbox"]').length,

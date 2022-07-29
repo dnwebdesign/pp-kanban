@@ -67,13 +67,16 @@ export default {
 
   created() {
     this.focusChanged();
-    axios.get(listsURL).then(res => {
-      this.lists = res.data;
-    }).catch(error => {
-      console.log(error)
-    });
+    this.getLists();
   },
   methods: {
+    getLists() {
+      axios.get(listsURL).then(res => {
+        this.lists = res.data;
+      }).catch(error => {
+        console.log(error)
+      });
+    },
     addTask(list) {
       let task = {
         title: this.newTaskValue,

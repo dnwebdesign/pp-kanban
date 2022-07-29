@@ -56,6 +56,7 @@ router.post("/addTask/:id", (req, res) => {
                 res.sendStatus(404).send('List was not found').end();
             } else {
                 let newTask = new Task(req.body);
+                newTask.list = req.params.id;
                 await newTask.save();
                 result.tasks.push(newTask._id);
                 result.markModified('tasks');
@@ -82,6 +83,7 @@ router.put("/addTodoList/:id", (req, res) => {
                 res.sendStatus(404).send('Task was not found').end();
             } else {
                 let newTodoList = new TodoList(req.body);
+                newTodoList.task = req.params.id;
                 await newTodoList.save();
                 result.todoLists.push(newTodoList._id);
                 result.markModified('tasks');
@@ -99,6 +101,24 @@ router.put("/addTodoList/:id", (req, res) => {
     });
 });
 
+// Get a todolist
+router.get('/getTodoList/:id', async (req, res) => {
+
+    const todoList = await TodoList.findById(req.params.id).populate({
+        path: 'todos',
+        model: Todo
+    });
+    console.log(todoList);
+    res.json(todoList);
+});
+
+
+// Update a todolist
+router.patch('/updateTodoList/:id', async (req, res) => {
+    const q = await TodoList.updateOne({_id: req.params.id}, {$set: req.body});
+    res.json(q);
+});
+
 // Add a todo to a todolist
 router.put("/addTodo/:id", (req, res) => {
 
@@ -108,6 +128,7 @@ router.put("/addTodo/:id", (req, res) => {
                 res.sendStatus(404).send('Task was not found').end();
             } else {
                 let newTodo = new Todo(req.body);
+                newTodo.todoList = req.params.id;
                 await newTodo.save();
                 result.todos.push(newTodo._id);
                 result.markModified('tasks');
@@ -127,7 +148,6 @@ router.put("/addTodo/:id", (req, res) => {
 
 // Update a todo
 router.patch('/updateTodo/:id', async (req, res) => {
-    console.log(req.body);
     const q = await Todo.updateOne({_id: req.params.id}, {$set: req.body});
     res.json(q);
 });
@@ -135,7 +155,6 @@ router.patch('/updateTodo/:id', async (req, res) => {
 // Delete a todo
 router.patch('/deleteTodo/:id', async (req, res) => {
     const result = await Todo.findByIdAndDelete({_id: req.params.id});
-
     res.json(result);
 });
 
