@@ -20,7 +20,6 @@ router.get('/', async (req, res) => {
             }],
         }],
     });
-    console.log(lists[0].tasks[0]);
     res.json(lists);
 });
 
@@ -42,7 +41,6 @@ router.delete('/delete/:id', async (req, res) => {
 
 // Update a list
 router.patch('/update/:id', async (req, res) => {
-    console.log(req.body);
     const q = await List.updateOne({_id: req.params.id}, {$set: req.body});
     res.json(q);
 });
@@ -108,7 +106,6 @@ router.get('/getTodoList/:id', async (req, res) => {
         path: 'todos',
         model: Todo
     });
-    console.log(todoList);
     res.json(todoList);
 });
 
@@ -117,6 +114,13 @@ router.get('/getTodoList/:id', async (req, res) => {
 router.patch('/updateTodoList/:id', async (req, res) => {
     const q = await TodoList.updateOne({_id: req.params.id}, {$set: req.body});
     res.json(q);
+});
+
+// Delete a todolist
+router.patch('/deleteTodoList/:id', async (req, res) => {
+    const result = await TodoList.findByIdAndDelete({_id: req.params.id});
+    await Todo.deleteMany({todoList: req.params.id});
+    res.json(result);
 });
 
 // Add a todo to a todolist
@@ -153,8 +157,17 @@ router.patch('/updateTodo/:id', async (req, res) => {
 });
 
 // Delete a todo
-router.patch('/deleteTodo/:id', async (req, res) => {
+router.delete('/deleteTodo/:id', async (req, res) => {
     const result = await Todo.findByIdAndDelete({_id: req.params.id});
+    const todolist = await TodoList.updateOne(
+        {_id: req.body.todoList},
+        {
+            $pull: {
+                'todos': req.params.id
+            }
+        }
+    );
+
     res.json(result);
 });
 

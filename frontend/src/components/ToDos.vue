@@ -135,25 +135,24 @@ export default {
       this.countCheckedTodos(todoListId);
     },
     deleteTodo(todo) {
-      console.log(this.mutatedTodoList.todos);
       if (confirm("Willst du " + todo.content + " wirklich löschen?")) {
         const indexOfObject = this.mutatedTodoList.todos.findIndex(object => {
           return object._id === todo._id;
         });
         this.mutatedTodoList.todos.splice(indexOfObject, 1);
-        axios.patch(deleteToDoURL + "/" + todo._id, todo)
-            .then(function (response) {
-              console.log(response);
-            })
-            .catch(function (error) {
-              if (error.response) {
-                console.log(error.response);
-              } else if (error.request) {
-                console.log(error.request);
-              } else if (error.message) {
-                console.log(error.message);
-              }
-            });
+        axios.delete(deleteToDoURL + "/" + todo._id, {
+          data: todo
+        }).then(function (response) {
+          console.log(response);
+        }).catch(function (error) {
+          if (error.response) {
+            console.log(error.response);
+          } else if (error.request) {
+            console.log(error.request);
+          } else if (error.message) {
+            console.log(error.message);
+          }
+        });
       }
       this.countCheckedTodos(this.mutatedTodoList._id);
     },
