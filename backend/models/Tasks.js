@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { todoListSchema } = require('./TodoLists');
 
 const TasksSchema = new mongoose.Schema({
     title: String,
