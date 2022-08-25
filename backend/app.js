@@ -22,7 +22,7 @@ app.use(cors())
 app.use(bodyParser.json())
 
 // routes
-app.get("/", (req,res)=>{
+app.get("/", (req, res) => {
     res.send("Server running.")
 })
 
@@ -30,6 +30,6 @@ const ListsRoute = require('./routes/Lists')
 app.use('/lists', ListsRoute)
 
 //start server
-app.listen(3000, ()=>{
+app.listen(3000, () => {
     console.log("listening at port:3000")
 })
