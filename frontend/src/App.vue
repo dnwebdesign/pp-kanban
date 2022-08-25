@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="flex justify-center">
-      <div class="min-h-screen flex overflow-x-scroll py-12">
+      <div class="min-h-screen flex py-12">
         <div
             v-for="list in lists"
             :key="list.title"
@@ -34,7 +34,7 @@
 
 
 <script lang="ts">
-import './assets/css/tailwind.css';
+import './assets/styles/tailwind.css';
 import draggable from "vuedraggable";
 import TaskCard from "./components/TaskCard.vue";
 import axios from "axios";
@@ -149,11 +149,7 @@ export default {
   watch: {},
 };
 </script>
-
-<style>
-.moving-task {
-  opacity: 0.5;
-  border: 1px solid #4299e1;
-  background: #F7FAFC;
-}
+<style lang="scss">
+@import 'assets/styles/general.scss';
+@import 'assets/styles/app.scss';
 </style>

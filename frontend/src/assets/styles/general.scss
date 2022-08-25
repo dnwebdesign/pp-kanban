@@ -1,0 +1,19 @@
+@import "variables";
+
+.link {
+    &- {
+        &delete {
+            border-bottom: 1px dashed $delete;
+            color: $delete;
+            line-height: 1.2;
+        }
+    }
+}
+
+.btn {
+    &- {
+        &delete {
+            background-color: $delete;
+        }
+    }
+}

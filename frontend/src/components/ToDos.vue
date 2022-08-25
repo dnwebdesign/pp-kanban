@@ -1,24 +1,28 @@
 <template>
-  <div class="bg-white shadow rounded px-3 pt-3 pb-5 border border-white">
-    <progress-bar
-        :options="options"
-        :value="this.progress"
-    ></progress-bar>
+  <div>
+    <div class="mb-8 mt-1">
+      <span class="text-sm">Fortschritt: </span>
+      <progress-bar :options="options" :value="this.progress"
+      ></progress-bar>
+    </div>
     <ul v-for="todo in mutatedTodoList.todos" :id="'todolist-' + mutatedTodoList._id">
       <li>
         <input :id="'todolist-'+todo._id" v-model="todo.done" :checked="todo.done"
-               class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+               class="w-4 h-4"
                type="checkbox" @click="updateTodo(mutatedTodoList._id, todo, false, $event.target.checked)">
-        <label :for="'todolist-'+todo._id" class="ml-2 text-gray-900 dark:text-gray-300">{{ todo.content }}</label>
-        <quick-edit v-model="newTodoValue" buttonOkText="To-Do speichern"
-                    @input="updateTodo(mutatedTodoList._id, todo, true, todo.done, $event.target)"
-                    @show="newTodoValue = todo.content">
-          Editieren
-        </quick-edit>
-        <button @click="deleteTodo(todo)">Löschen</button>
+        <label :for="'todolist-'+todo._id" class="ml-1 mr-2 cursor-pointer">{{ todo.content }}</label>
+        <div class="todo-buttons inline-block">
+          <quick-edit v-model="newTodoValue" buttonCancelText="Abbrechen" buttonOkText="Speichern" class="inline"
+                      @input="updateTodo(mutatedTodoList._id, todo, true, todo.done, $event.target)"
+                      @show="newTodoValue = todo.content">
+            Editieren
+          </quick-edit>
+          <button class="link-delete inline text-sm" @click="deleteTodo(todo)">Löschen</button>
+        </div>
       </li>
     </ul>
-    <quick-edit v-model="newTodoValue" buttonOkText="To-Do speichern" @input="addTodo(mutatedTodoList)"
+    <quick-edit v-model="newTodoValue" buttonCancelText="Abbrechen" buttonOkText="Speichern"
+                @input="addTodo(mutatedTodoList)"
                 @show="newTodoValue = ' '">
       To-Do hinzufügen
     </quick-edit>
@@ -59,8 +63,8 @@ export default {
           hideText: false
         },
         progress: {
-          color: '#2dbd2d',
-          backgroundColor: '#333333',
+          color: '#29a3a3',
+          backgroundColor: '#a33987',
           inverted: false
         },
         layout: {
@@ -160,8 +164,15 @@ export default {
       let checkboxes = document.querySelectorAll('#todolist-' + todoListId + ' input[type="checkbox"]').length,
           checked = document.querySelectorAll('#todolist-' + todoListId + ' input[type="checkbox"]:checked').length;
 
-      this.progress = Math.round(100 / checkboxes * checked);
+      if (checked === 0) {
+        this.progress = 0;
+      } else {
+        this.progress = Math.round(100 / checkboxes * checked);
+      }
     }
   },
 };
 </script>
+<style lang="scss" scoped>
+@import '../assets/styles/todos.scss';
+</style>

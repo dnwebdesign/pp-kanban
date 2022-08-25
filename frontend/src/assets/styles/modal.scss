@@ -1,0 +1,78 @@
+@import "variables";
+
+.modal-mask {
+    display: table;
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.modal-container {
+    display: flex;
+    flex-direction: column;
+    width: 700px;
+    max-width: 99vw;
+    max-height: 90vh;
+    margin: 0px auto;
+    padding: 20px 30px;
+    overflow-y: scroll;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
+.modal-header h3 {
+    margin-top: 0;
+    color: #42b983;
+}
+
+.modal-default-button {
+    margin-left: auto;
+    background-color: $primary;
+    color: #fff;
+
+    &:hover {
+        background-color: $secondary;
+    }
+}
+
+.modal-enter-from {
+    opacity: 0;
+}
+
+.modal-leave-to {
+    opacity: 0;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+}
+
+.lists-selection {
+    &:focus,
+    &:focus-visible,
+    &:active,
+    &:visited,
+    &:target {
+        border-color: $primary;
+        outline: $primary;
+    }
+}
+
+.task-description {
+    border: 1px solid #ccc;
+    resize: none;
+}

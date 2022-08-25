@@ -3,44 +3,58 @@
     <div v-if="show" class="modal-mask">
       <div class="modal-wrapper" @click="$emit('close')">
         <div class="modal-container" @click.stop>
-          <div class="modal-header">
-            <slot name="header">{{ task.title }}</slot>
+          <div class="modal-header mb-2">
+            <h1 class="font-semibold text-xl">{{ task.title }}</h1>
+            <div class="text-sm font-medium">in Liste {{ list.title }}</div>
           </div>
-
           <div class="modal-body">
-            Verschieben nach:
-            <select>
+            <label class="inline mb-2 text-sm" for="lists-selection">Verschieben
+              nach: </label>
+            <select id="lists-selection"
+                    class="lists-selection mb-6 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg inline py-0.5 px-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
               <option v-for="list in lists" :value="list.title">
                 {{ list.title }}
               </option>
             </select>
 
-            <quick-edit v-model="newTodolistValue" buttonOkText="Todo-Liste speichern"
+            <label class="block text-sm" for="task-description">Beschreibung:</label>
+            <textarea id="task-description" class="task-description rounded-lg p-2 mb-6">
+              {{ task.description }}
+            </textarea>
+
+            <quick-edit v-model="newTodolistValue" buttonCancelText="Abbrechen" buttonOkText="Speichern" class="mb-6"
                         @input="addTodoList(task)">
               Todo-Liste hinzufügen
             </quick-edit>
 
-            <div v-for="todoList in task.todoLists">
-              <h1>{{ todoList.title }}</h1>
-              <quick-edit v-model="newTodolistValue" buttonOkText="Umbenennung speichern"
+            <div v-for="todoList in task.todoLists"
+                 class="block p-4 max-w bg-white rounded-lg border border-gray-200 mb-4">
+              <span class="text-sm block">Todo-Liste</span>
+              <h2 class="text-xl inline mr-3">{{ todoList.title }}</h2>
+              <quick-edit v-model="newTodolistValue" buttonCancelText="Abbrechen" buttonOkText="Speichern"
+                          class="inline"
                           @input="updateTodoList(todoList)">
                 Umbenennen
               </quick-edit>
-              <button @click="deleteTodoList(todoList)">Löschen</button>
+              <button class="inline text-sm link-delete" @click="deleteTodoList(todoList)">Löschen</button>
               <keep-alive>
                 <to-dos :key="todoList._id" :todoList="todoList"></to-dos>
               </keep-alive>
             </div>
           </div>
 
-          <div class="modal-footer">
-            <slot name="footer">
-              <button
-                  class="modal-default-button mt-3 bg-gray-400 hover:bg-blue-500 text-black py-1 px-3 rounded"
-                  @click="$emit('close')"
-              >Zurück zum Board
-              </button>
-            </slot>
+          <div class="modal-footer mt-3">
+            <button
+                class="block modal-default-button mt-3 text-black py-1 px-3 rounded"
+                @click="$emit('close')"
+            >Zurück zum Board
+            </button>
+
+            <button
+                class="block modal-default-button mt-3 text-black py-1 px-3 rounded btn-delete"
+                @click="$emit('close')"
+            >Aufgabe löschen
+            </button>
           </div>
         </div>
       </div>
@@ -143,68 +157,6 @@ export default {
   },
 }
 </script>
-
-<style>
-.modal-mask {
-  position: fixed;
-  z-index: 9998;
-  top: 0;
-  left: 0;
-  display: table;
-  width: 100%;
-  height: 100%;
-  transition: opacity 0.3s ease;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-wrapper {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.modal-container {
-  width: 600px;
-  margin: 0px auto;
-  padding: 20px 30px;
-  transition: all 0.3s ease;
-  border-radius: 2px;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-}
-
-.modal-header h3 {
-  margin-top: 0;
-  color: #42b983;
-}
-
-.modal-body {
-  margin: 20px 0;
-}
-
-.modal-default-button {
-  float: right;
-}
-
-/*
- * The following styles are auto-applied to elements with
- * transition="modal" when their visibility is toggled
- * by Vue.js.
- *
- * You can easily play with the modal transition by editing
- * these styles.
- */
-
-.modal-enter-from {
-  opacity: 0;
-}
-
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-from .modal-container,
-.modal-leave-to .modal-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-}
+<style lang="scss">
+@import '../assets/styles/modal.scss';
 </style>

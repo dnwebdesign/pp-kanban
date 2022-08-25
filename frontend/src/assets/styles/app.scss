@@ -1,0 +1,86 @@
+@import "variables";
+
+body {
+    background-color: $primary;
+}
+
+input[type="checkbox"] {
+    accent-color: $primary;
+
+    &:hover {
+        cursor: pointer;
+        accent-color: $secondary;
+    }
+
+    &:focus {
+        outline: 0;
+        --tw-ring-opacity: 0;
+    }
+}
+
+.vue-quick-edit {
+
+    .vue-quick-edit {
+        &__ {
+            &input {
+                padding: 17px 10px;
+                border-radius: 5px;
+                border-color: $primary;
+                outline: $primary;
+            }
+
+            &link {
+                border-bottom-color: $primary;
+                color: $primary;
+                font-size: 14px;
+                font-style: normal;
+
+                &:hover {
+                    color: $secondary;
+                }
+            }
+
+            &button {
+                height: unset;
+                min-height: unset;
+                padding: 5px 10px;
+                border-radius: 5px;
+                border-color: $primary;
+                background-color: $primary;
+                color: #fff;
+
+                &--cancel {
+                    margin-right: 10px;
+                    border-color: $cancel;
+                    background-color: $cancel;
+                }
+            }
+        }
+    }
+}
+
+.todo-buttons {
+    margin-bottom: 20px;
+    margin-left: 8px;
+
+    .vue-quick-edit {
+        &__ {
+
+            &input {
+                margin-bottom: 10px;
+            }
+
+            &button {
+
+
+                &--ok {
+                    margin-right: 8px;
+                }
+
+                &--cancel {
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+}
