@@ -1,15 +1,16 @@
 <template>
   <div id="app">
     <div class="flex justify-center">
-      <div class="min-h-screen flex py-12">
+      <div class="flex py-10 pb-2">
         <div
             v-for="list in lists"
             :key="list.title"
-            class="bg-gray-100 rounded-lg px-3 py-10 column-width rounded mr-4"
+            class="flex flex-col bg-gray-100 rounded-lg px-3 pt-6 pb-2 column-width rounded mr-4 list"
         >
           <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm"></p>
-          <label-edit :pkey="list._id" :placeholder="list.title" tabindex="0" v-bind:text="list.title"
-                      v-on:text-updated-blur="textUpdated()"></label-edit>
+          <label-edit :pkey="list._id" :placeholder="list.title" :text="list.title"
+                      tabindex="0" v-bind:text="list.title"
+                      v-on:text-updated-blur="updateList(list, $event)"></label-edit>
 
           <draggable :animation="200" :list="list.tasks" ghost-class="ghost-card" group="tasks" @change="updateLists">
             <task-card
@@ -24,7 +25,17 @@
                 class="mt-3 cursor-move"
             ></task-card>
           </draggable>
-          <quick-edit v-model="newTaskValue" buttonOkText="Aufgabe speichern" @input="addTask(list)">Aufgabe hinzufügen
+          <quick-edit v-model="newTaskValue" buttonOkText="Aufgabe speichern" class="mt-3 add-task-buttons"
+                      @input="addTask(list)">
+            Aufgabe hinzufügen
+          </quick-edit>
+          <button class="inline text-sm link-delete mt-auto ml-auto" @click="deleteList(list)">Liste löschen</button>
+        </div>
+        <div class="bg-gray-100/75 rounded-lg px-3 pt-2 pb-2 column-width rounded mr-4 new-list list">
+
+          <quick-edit v-model="newListValue" buttonOkText="Liste speichern" class="add-list"
+                      @input="addList()">
+            Neue Liste hinzufügen
           </quick-edit>
         </div>
       </div>
@@ -45,8 +56,10 @@ import Vue from 'vue';
 Vue.component('quick-edit', QuickEdit);
 
 const listsURL = 'http://localhost:3000/lists',
+    newURL = 'http://localhost:3000/lists/new',
     updateURL = 'http://localhost:3000/lists/update',
-    newTaskURL = 'http://localhost:3000/lists/addTask';
+    deleteURL = 'http://localhost:3000/lists/delete',
+    addTaskURL = 'http://localhost:3000/lists/addTask';
 
 let soundOn = false;
 
@@ -62,6 +75,7 @@ export default {
     return {
       lists: [],
       newTaskValue: "",
+      newListValue: "",
     };
   },
 
@@ -77,33 +91,72 @@ export default {
         console.log(error)
       });
     },
+    addList() {
+      let list = {
+        title: this.newListValue,
+      };
+      axios.post(newURL, list)
+          .then((response) => {
+            console.log(response);
+            this.getLists();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    },
     addTask(list) {
       let task = {
         title: this.newTaskValue,
       };
-      list.tasks.push(task);
-      axios.post(newTaskURL + "/" + list._id, task)
-          .then(function (response) {
+      axios.post(addTaskURL + "/" + list._id, task)
+          .then((response) => {
             console.log(response);
+            this.getLists();
           })
-          .catch(function (error) {
+          .catch((error) => {
             console.log(error);
           });
     },
     updateLists() {
-      this.lists.forEach((list, li) => {
-        axios.patch(updateURL + "/" + list._id, list)
-            .then(function (response) {
-              console.log(response);
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
+      this.lists.forEach((list) => {
+        this.updateList(list, null);
       });
     },
-    textUpdated: function (text) {
-      console.log("text with id " + this.$vnode.key + " updated: " + text);
+    updateList: function (list, listTitle) {
+      if (listTitle != null) {
+        list.title = listTitle;
+      }
+      axios.patch(updateURL + "/" + list._id, list)
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
     },
+    deleteList(list) {
+      if (confirm("Willst du die Liste " + list.title + " wirklich löschen? Achtung: Dadurch werden auch alle Aufgaben in der Liste gelöscht.")) {
+        const indexOfObject = this.lists.findIndex(object => {
+          return object._id === list._id;
+        });
+        this.lists.splice(indexOfObject, 1);
+        axios.delete(deleteURL + "/" + list._id, list)
+            .then(async (response) => {
+              console.log(response);
+              this.getLists();
+            })
+            .catch((error) => {
+              if (error.response) {
+                console.log(error.response);
+              } else if (error.request) {
+                console.log(error.request);
+              } else if (error.message) {
+                console.log(error.message);
+              }
+            });
+      }
+    }
+    ,
     focusChanged() {
       window.addEventListener('keydown', (event) => {
         let synth = window.speechSynthesis;
@@ -146,8 +199,10 @@ export default {
       });
     },
   },
-  watch: {},
-};
+  watch: {}
+  ,
+}
+;
 </script>
 <style lang="scss">
 @import 'assets/styles/general.scss';

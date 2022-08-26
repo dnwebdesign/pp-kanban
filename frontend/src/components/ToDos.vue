@@ -99,12 +99,12 @@ export default {
         done: false,
       };
       this.newTodoValue = '';
-      this.mutatedTodoList.todos.push(todo);
-      await axios.put(addToDoURL + "/" + todoList._id, todo)
-          .then(function (response) {
+      await axios.post(addToDoURL + "/" + todoList._id, todo)
+          .then((response) => {
             console.log(response);
+            this.mutatedTodoList.todos.push(todo);
           })
-          .catch(function (error) {
+          .catch((error) => {
             if (error.response) {
               console.log(error.response);
             } else if (error.request) {
@@ -124,10 +124,10 @@ export default {
       }
       this.newTodoValue = '';
       axios.patch(updateToDoURL + "/" + todo._id, todo)
-          .then(function (response) {
+          .then((response) => {
             console.log(response);
           })
-          .catch(function (error) {
+          .catch((error) => {
             if (error.response) {
               console.log(error.response);
             } else if (error.request) {
@@ -146,9 +146,9 @@ export default {
         this.mutatedTodoList.todos.splice(indexOfObject, 1);
         axios.delete(deleteToDoURL + "/" + todo._id, {
           data: todo
-        }).then(function (response) {
+        }).then((response) => {
           console.log(response);
-        }).catch(function (error) {
+        }).catch((error) => {
           if (error.response) {
             console.log(error.response);
           } else if (error.request) {

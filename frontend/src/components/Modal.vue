@@ -4,14 +4,14 @@
       <div class="modal-wrapper" @click="$emit('close')">
         <div class="modal-container" @click.stop>
           <div class="modal-header mb-2">
-            <h1 class="font-semibold text-xl">{{ task.title }}</h1>
-            <div class="text-sm font-medium">in Liste {{ list.title }}</div>
+            <h1 class="font-semibold text-xl task-title">{{ task.title }}</h1>
+            <div class="text-sm font-medium task-in-list">in Liste <span class="italic">{{ list.title }}</span></div>
           </div>
           <div class="modal-body">
             <label class="inline mb-2 text-sm" for="lists-selection">Verschieben
               nach: </label>
             <select id="lists-selection"
-                    class="lists-selection mb-6 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg inline py-0.5 px-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                    class="lists-selection mb-6 bg-gray-100 italic border border-gray-300 text-gray-900 text-sm rounded-lg inline py-0.5 px-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
               <option v-for="list in lists" :value="list.title">
                 {{ list.title }}
               </option>
@@ -102,12 +102,12 @@ export default {
       let todoList = {
         title: this.newTodolistValue,
       };
-      this.task.todoLists.push(todoList);
-      axios.put(addToDoListURL + "/" + task._id, todoList)
-          .then(function (response) {
+      axios.post(addToDoListURL + "/" + task._id, todoList)
+          .then((response) => {
             console.log(response);
+            this.$parent.$parent.$parent.getLists();
           })
-          .catch(function (error) {
+          .catch((error) => {
             if (error.response) {
               console.log(error.response);
             } else if (error.request) {
@@ -120,10 +120,11 @@ export default {
     updateTodoList(todoList) {
       todoList.title = this.newTodolistValue;
       axios.patch(updateToDoListURL + "/" + todoList._id, todoList)
-          .then(function (response) {
+          .then((response) => {
             console.log(response);
+            this.$parent.$parent.$parent.getLists();
           })
-          .catch(function (error) {
+          .catch((error) => {
             if (error.response) {
               console.log(error.response);
             } else if (error.request) {
@@ -134,16 +135,16 @@ export default {
           });
     },
     deleteTodoList(todoList) {
-      if (confirm("Willst du " + todoList.title + " wirklich löschen? Dadurch werden auch alle Aufgaben in der Todo-Liste gelöscht.")) {
+      if (confirm("Willst du " + todoList.title + " wirklich löschen? Achtung: Dadurch werden auch alle Aufgaben in der Todo-Liste gelöscht.")) {
         const indexOfObject = this.task.todoLists.findIndex(object => {
           return object._id === todoList._id;
         });
         this.task.todoLists.splice(indexOfObject, 1);
-        axios.patch(deleteToDoListURL + "/" + todoList._id, todoList)
-            .then(function (response) {
+        axios.delete(deleteToDoListURL + "/" + todoList._id, todoList)
+            .then((response) => {
               console.log(response);
             })
-            .catch(function (error) {
+            .catch((error) => {
               if (error.response) {
                 console.log(error.response);
               } else if (error.request) {

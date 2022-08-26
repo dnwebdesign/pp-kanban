@@ -61,7 +61,17 @@
     transform: scale(1.1);
 }
 
+.task-title {
+    color: $primary;
+}
+
+.task-in-list {
+    color: $secondary;
+}
+
 .lists-selection {
+    background-color: $primary;
+
     &:focus,
     &:focus-visible,
     &:active,
@@ -69,6 +79,11 @@
     &:target {
         border-color: $primary;
         outline: $primary;
+    }
+
+    &:hover {
+        background-color: $secondary;
+        cursor: pointer;
     }
 }
 

@@ -34,9 +34,26 @@ router.post('/new', async (req, res) => {
 
 // Delete a list
 router.delete('/delete/:id', async (req, res) => {
-    const result = await List.findByIdAndDelete({_id: req.params.id});
+    await List.deleteOne({_id: req.params.id}).then(async () => {
 
-    res.json(result);
+        await Task.find({list: req.params.id}).then(async (tasksData) => {
+            for (const tk of tasksData) {
+                await Task.deleteMany({list: req.params.id});
+
+                await TodoList.find({task: tk.id}).then(async (todoListsData) => {
+                    for (const tl of todoListsData) {
+                        await TodoList.deleteMany({task: tk.id});
+
+                        await Todo.find({todoList: tl.id}).then(async (todosData) => {
+                            for (const td of todosData) {
+                                await Todo.deleteMany({todoList: tl.id});
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
 });
 
 // Update a list
@@ -73,7 +90,7 @@ router.post("/addTask/:id", (req, res) => {
 });
 
 // Add a todolist to a task
-router.put("/addTodoList/:id", (req, res) => {
+router.post("/addTodoList/:id", (req, res) => {
 
     Task.findById(req.params.id, async function (err, result) {
         if (!err) {
@@ -101,7 +118,6 @@ router.put("/addTodoList/:id", (req, res) => {
 
 // Get a todolist
 router.get('/getTodoList/:id', async (req, res) => {
-
     const todoList = await TodoList.findById(req.params.id).populate({
         path: 'todos',
         model: Todo
@@ -117,14 +133,14 @@ router.patch('/updateTodoList/:id', async (req, res) => {
 });
 
 // Delete a todolist
-router.patch('/deleteTodoList/:id', async (req, res) => {
+router.delete('/deleteTodoList/:id', async (req, res) => {
     const result = await TodoList.findByIdAndDelete({_id: req.params.id});
     await Todo.deleteMany({todoList: req.params.id});
     res.json(result);
 });
 
 // Add a todo to a todolist
-router.put("/addTodo/:id", (req, res) => {
+router.post("/addTodo/:id", (req, res) => {
 
     TodoList.findById(req.params.id, async function (err, result) {
         if (!err) {

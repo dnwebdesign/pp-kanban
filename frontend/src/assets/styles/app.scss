@@ -1,6 +1,7 @@
 @import "variables";
 
 body {
+    overflow-y: scroll;
     background-color: $primary;
 }
 
@@ -71,14 +72,58 @@ input[type="checkbox"] {
             }
 
             &button {
-
-
                 &--ok {
                     margin-right: 8px;
                 }
 
                 &--cancel {
                     margin-left: 0;
+                }
+            }
+        }
+    }
+}
+
+.list {
+    min-width: 280px;
+}
+
+.add-task-buttons {
+    .vue-quick-edit {
+        &__ {
+
+            &input {
+                display: block;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            &buttons {
+                display: flex !important;
+                justify-content: space-between;
+                margin-left: 0 !important;
+            }
+
+            &button {
+                &--cancel {
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}
+
+.new-list {
+    height: fit-content;
+
+    .add-list {
+        text-align: center;
+
+        .vue-quick-edit {
+
+            &__ {
+                &link {
+                    border-bottom: none;
                 }
             }
         }
