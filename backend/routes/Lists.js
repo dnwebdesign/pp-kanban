@@ -34,7 +34,7 @@ router.post('/new', async (req, res) => {
 
 // Delete a list
 router.delete('/delete/:id', async (req, res) => {
-    await List.deleteOne({_id: req.params.id}).then(async () => {
+    const result = await List.deleteOne({_id: req.params.id}).then(async () => {
 
         await Task.find({list: req.params.id}).then(async (tasksData) => {
             for (const tk of tasksData) {
@@ -54,6 +54,7 @@ router.delete('/delete/:id', async (req, res) => {
             }
         });
     });
+    res.json(result);
 });
 
 // Update a list
@@ -87,6 +88,30 @@ router.post("/addTask/:id", (req, res) => {
             res.status(400).send(err.message);
         }
     });
+});
+
+// Update a task
+router.patch('/updateTask/:id', async (req, res) => {
+    const q = await Task.updateOne({_id: req.params.id}, {$set: req.body});
+    res.json(q);
+});
+
+// Delete a task
+router.delete('/deleteTask/:id', async (req, res) => {
+    const result = await Task.deleteOne({_id: req.params.id}).then(async () => {
+        await TodoList.find({task: req.params.id}).then(async (todoListsData) => {
+            for (const tl of todoListsData) {
+                await TodoList.deleteMany({task: req.params.id});
+
+                await Todo.find({todoList: tl.id}).then(async (todosData) => {
+                    for (const td of todosData) {
+                        await Todo.deleteMany({todoList: tl.id});
+                    }
+                });
+            }
+        });
+    });
+    res.json(result);
 });
 
 // Add a todolist to a task

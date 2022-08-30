@@ -12,11 +12,6 @@ input[type="checkbox"] {
         cursor: pointer;
         accent-color: $secondary;
     }
-
-    &:focus {
-        outline: 0;
-        --tw-ring-opacity: 0;
-    }
 }
 
 .vue-quick-edit {

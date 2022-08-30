@@ -72,15 +72,6 @@
 .lists-selection {
     background-color: $primary;
 
-    &:focus,
-    &:focus-visible,
-    &:active,
-    &:visited,
-    &:target {
-        border-color: $primary;
-        outline: $primary;
-    }
-
     &:hover {
         background-color: $secondary;
         cursor: pointer;

@@ -1,39 +1,49 @@
 <template>
   <div id="app">
-    <div class="flex justify-center">
-      <div class="flex py-10 pb-2">
+    <div class="flex flex-col items-center">
+      <div class="mt-4 py-4 bg-gray-100 rounded-lg px-3 flex leading-none">
+        <button aria-hidden="false" class="mr-4 hover:cursor-pointer focus:outline outline-2" @click="this.readManual">
+          <PhBookOpen aria-hidden="true" class="inline"/>
+          Handbuch vorlesen
+        </button>
+        <input id="turnSoundOn" alt="Sound aktivieren" class="w-4 h-4 mr-1 hover:cursor-pointer" type="checkbox"
+               @change="toggleSound"/>
+        <label class="hover:cursor-pointer" for="turnSoundOn">Sprachausgabe aktivieren</label>
+      </div>
+      <div class="flex pt-4 pb-2">
         <div
             v-for="list in lists"
             :key="list.title"
             class="flex flex-col bg-gray-100 rounded-lg px-3 pt-6 pb-2 column-width rounded mr-4 list"
         >
-          <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm"></p>
-          <label-edit :pkey="list._id" :placeholder="list.title" :text="list.title"
+          <label :for="list._id" class="text-gray-700 font-semibold font-sans tracking-wide text-sm">Liste </label>
+          <label-edit :id="list._id" :pkey="list._id" :text="list.title" placeholder="Kein Titel"
                       tabindex="0" v-bind:text="list.title"
                       v-on:text-updated-blur="updateList(list, $event)"></label-edit>
 
-          <draggable :animation="200" :list="list.tasks" ghost-class="ghost-card" group="tasks" @change="updateLists">
+          <draggable :animation="200" :list="list.tasks" ghost-class="ghost-card" group="tasks"
+                     @change="updateLists">
             <task-card
-                v-for="(task) in list.tasks"
+                v-for="task in list.tasks"
                 :key="task.id"
                 :list="list"
                 :lists="lists"
                 :task="task"
                 :todos="task.todos"
-                :value="list._id"
-                autofocus
                 class="mt-3 cursor-move"
             ></task-card>
           </draggable>
-          <quick-edit v-model="newTaskValue" buttonOkText="Aufgabe speichern" class="mt-3 add-task-buttons"
+          <quick-edit v-model="newTaskValue" buttonCancelText="Abbrechen" buttonOkText="Karte speichern"
+                      class="mt-3 add-task-buttons"
                       @input="addTask(list)">
-            Aufgabe hinzufügen
+            Karte hinzufügen
           </quick-edit>
           <button class="inline text-sm link-delete mt-auto ml-auto" @click="deleteList(list)">Liste löschen</button>
         </div>
-        <div class="bg-gray-100/75 rounded-lg px-3 pt-2 pb-2 column-width rounded mr-4 new-list list">
+        <div class="bg-gray-100 rounded-lg px-3 pt-2 pb-2 column-width rounded mr-4 new-list list">
 
-          <quick-edit v-model="newListValue" buttonOkText="Liste speichern" class="add-list"
+          <quick-edit v-model="newListValue" buttonCancelText="Abbrechen" buttonOkText="Liste speichern"
+                      class="add-list"
                       @input="addList()">
             Neue Liste hinzufügen
           </quick-edit>
@@ -43,7 +53,6 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import './assets/styles/tailwind.css';
 import draggable from "vuedraggable";
@@ -51,6 +60,7 @@ import TaskCard from "./components/TaskCard.vue";
 import axios from "axios";
 import LabelEdit from 'label-edit';
 import QuickEdit from 'vue-quick-edit';
+import {PhBookOpen} from "phosphor-vue";
 import Vue from 'vue';
 
 Vue.component('quick-edit', QuickEdit);
@@ -61,7 +71,7 @@ const listsURL = 'http://localhost:3000/lists',
     deleteURL = 'http://localhost:3000/lists/delete',
     addTaskURL = 'http://localhost:3000/lists/addTask';
 
-let soundOn = false;
+const synth = window.speechSynthesis;
 
 
 export default {
@@ -70,12 +80,14 @@ export default {
     draggable,
     TaskCard,
     LabelEdit,
+    PhBookOpen,
   },
   data() {
     return {
       lists: [],
       newTaskValue: "",
       newListValue: "",
+      soundOn: false,
     };
   },
 
@@ -83,10 +95,48 @@ export default {
     this.focusChanged();
     this.getLists();
   },
+  mounted() {
+    window.addEventListener('keydown', (event) => {
+      if (event.altKey && event.key === 'Dead' || event.altKey && event.key === 'n' || event.altKey && event.key === 'N') {
+        document.querySelector('.add-list .vue-quick-edit__link ').click();
+      }
+    });
+    window.addEventListener('keydown', (event) => {
+      if (event.altKey && event.key == 'ArrowUp') {
+        if (document.getElementById("turnSoundOn").checked) {
+          document.getElementById("turnSoundOn").checked = false;
+        } else {
+          document.getElementById("turnSoundOn").checked = true;
+        }
+        this.toggleSound();
+      }
+    });
+  },
   methods: {
-    getLists() {
+    readManual() {
+      let manualSpeech = new SpeechSynthesisUtterance('Willkommen im Kanban-Board! Hinweise zur Bedienung: Mit dem Schalter "Sprachausgabe" oder dem Tastaturkürzel Alt+S+Aufwärtspfeil können Sie die Sprachausgabe für Aktionen aktivieren oder deaktivieren. Mit den Tastaturkürzeln Alt+Rechtspfeil beziehungsweise Alt+Linkspfeil können Sie eine ausgewählte Karte in die nächste beziehungsweise vorherige Liste verschieben.');
+      manualSpeech.lang = 'de-DE';
+      synth.speak(manualSpeech);
+    },
+    toggleSound() {
+      let soundOnSpeech = new SpeechSynthesisUtterance('Sprachausgabe wurde aktiviert.'),
+          soundOffSpeech = new SpeechSynthesisUtterance('Sprachausgabe wurde deaktiviert.');
+      soundOnSpeech.lang = 'de-DE';
+      soundOffSpeech.lang = 'de-DE';
+      if (this.soundOn === false) {
+        this.soundOn = true;
+        synth.speak(soundOnSpeech);
+      } else {
+        this.soundOn = false;
+        synth.speak(soundOffSpeech);
+      }
+    },
+    async getLists() {
+      let tempList = [];
+
       axios.get(listsURL).then(res => {
-        this.lists = res.data;
+        tempList = res.data;
+        this.lists = tempList;
       }).catch(error => {
         console.log(error)
       });
@@ -97,112 +147,150 @@ export default {
       };
       axios.post(newURL, list)
           .then((response) => {
-            console.log(response);
             this.getLists();
+            if (this.soundOn) {
+              let addListSpeech = new SpeechSynthesisUtterance('Die neue Liste ' + list.title + " wurde angelegt.");
+              addListSpeech.lang = 'de-DE';
+              synth.speak(addListSpeech);
+            }
           })
           .catch((error) => {
             console.log(error);
+            if (this.soundOn) {
+              let addListErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Erstellen der Liste.');
+              addListErrorSpeech.lang = 'de-DE';
+              synth.speak(addListErrorSpeech);
+            }
           });
     },
     addTask(list) {
       let task = {
         title: this.newTaskValue,
+        description: "",
       };
       axios.post(addTaskURL + "/" + list._id, task)
           .then((response) => {
-            console.log(response);
             this.getLists();
+            if (this.soundOn) {
+              let addTaskSpeech = new SpeechSynthesisUtterance('Die neue Karte ' + task.title + " wurde zur Liste " + list.title + " hinzugefügt.");
+              addTaskSpeech.lang = 'de-DE';
+              synth.speak(addTaskSpeech);
+            }
           })
           .catch((error) => {
             console.log(error);
+            if (this.soundOn) {
+              let addTaskErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Erstellen der Karte.');
+              addTaskErrorSpeech.lang = 'de-DE';
+              synth.speak(addTaskErrorSpeech);
+            }
           });
     },
-    updateLists() {
-      this.lists.forEach((list) => {
+    async updateLists(lists) {
+      await lists.forEach((list) => {
         this.updateList(list, null);
       });
     },
-    updateList: function (list, listTitle) {
+    updateList(list, listTitle) {
+      let oldTitle = list.title;
       if (listTitle != null) {
         list.title = listTitle;
       }
       axios.patch(updateURL + "/" + list._id, list)
           .then((response) => {
-            console.log(response);
+            if (listTitle != null && this.soundOn) {
+              let updateListSpeech = new SpeechSynthesisUtterance('Die Liste ' + oldTitle + ' wurde in ' + list.title + ' umbenannt.');
+              updateListSpeech.lang = 'de-DE';
+              synth.speak(updateListSpeech);
+            }
           })
           .catch((error) => {
             console.log(error);
+            if (this.soundOn) {
+              let updateListErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Aktualisieren der Liste.');
+              updateListErrorSpeech.lang = 'de-DE';
+              synth.speak(updateListErrorSpeech);
+            }
           });
     },
     deleteList(list) {
-      if (confirm("Willst du die Liste " + list.title + " wirklich löschen? Achtung: Dadurch werden auch alle Aufgaben in der Liste gelöscht.")) {
+      if (confirm("Willst du die Liste " + list.title + " wirklich löschen? Achtung: Dadurch werden auch alle Karten in der Liste gelöscht.")) {
         const indexOfObject = this.lists.findIndex(object => {
           return object._id === list._id;
         });
         this.lists.splice(indexOfObject, 1);
-        axios.delete(deleteURL + "/" + list._id, list)
-            .then(async (response) => {
-              console.log(response);
+        axios.delete(deleteURL + "/" + list._id)
+            .then((response) => {
               this.getLists();
+              if (this.soundOn) {
+                let deleteListSpeech = new SpeechSynthesisUtterance('Die Liste ' + list.title + " wurde gelöscht.");
+                deleteListSpeech.lang = 'de-DE';
+                synth.speak(deleteListSpeech);
+              }
             })
             .catch((error) => {
+              let deleteListErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Löschen der Liste.');
+              deleteListErrorSpeech.lang = 'de-DE';
               if (error.response) {
                 console.log(error.response);
+                if (this.soundOn) {
+                  synth.speak(deleteListErrorSpeech);
+                }
               } else if (error.request) {
                 console.log(error.request);
+                if (this.soundOn) {
+                  synth.speak(deleteListErrorSpeech);
+                }
               } else if (error.message) {
                 console.log(error.message);
+                if (this.soundOn) {
+                  synth.speak(deleteListErrorSpeech);
+                }
               }
             });
       }
-    }
-    ,
+    },
     focusChanged() {
       window.addEventListener('keydown', (event) => {
-        let synth = window.speechSynthesis;
-
         if (event.altKey && event.key == 'ArrowRight') {
-          const listId = event.target.attributes.value.value,
+          let listId = event.target.attributes['value'].value,
               task = event.target.__vue__.task;
-          this.lists.forEach((list, li) => {
+          this.lists.forEach(async (list, li) => {
             if (list._id == listId) {
               this.lists[li + 1].tasks.push(task);
               this.lists[li].tasks.splice(this.lists[li].tasks.indexOf(task), 1);
 
-              if (soundOn) {
-                let utterThis1 = new SpeechSynthesisUtterance('Card: "' + task.title + '"' + ' moved from ' + this.lists[li].title + ' to ' + this.lists[li + 1].title);
-                utterThis1.lang = 'en-US';
-                synth.speak(utterThis1);
+              if (this.soundOn) {
+                let cardMovedSpeech = new SpeechSynthesisUtterance('Die Karte ' + task.title + ' wurde von der Liste ' + this.lists[li].title + ' in die Liste ' + this.lists[li + 1].title + ' verschoben.');
+                cardMovedSpeech.lang = 'de-DE';
+                synth.speak(cardMovedSpeech);
               }
+              await this.updateLists(this.lists);
             }
           });
-          this.updateLists();
         }
 
         if (event.altKey && event.key == 'ArrowLeft') {
-          const listId = event.target.attributes.value.value,
+          let listId = event.target.attributes.value.value,
               task = event.target.__vue__.task;
-          this.lists.forEach((list, li) => {
+          this.lists.forEach(async (list, li) => {
             if (list._id == listId) {
               this.lists[li - 1].tasks.push(task);
               this.lists[li].tasks.splice(this.lists[li].tasks.indexOf(task), 1);
 
-              if (soundOn) {
-                let utterThis2 = new SpeechSynthesisUtterance('Card: "' + task.title + '"' + ' moved from ' + this.lists[li].title + ' to ' + this.lists[li - 1].title);
-                utterThis2.lang = 'en-US';
-                synth.speak(utterThis2);
+              if (this.soundOn) {
+                let cardMovedSpeech = new SpeechSynthesisUtterance('Die Karte ' + task.title + ' wurde von der Liste ' + this.lists[li].title + ' in die Liste ' + this.lists[li - 1].title + ' verschoben.');
+                cardMovedSpeech.lang = 'de-DE';
+                synth.speak(cardMovedSpeech);
               }
+              await this.updateLists(this.lists);
             }
           });
-          this.updateLists();
         }
       });
     },
   },
-  watch: {}
-  ,
 }
-;
 </script>
 <style lang="scss">
 @import 'assets/styles/general.scss';

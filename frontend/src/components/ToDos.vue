@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-8 mt-1">
-      <span class="text-sm">Fortschritt: </span>
+      <div class="text-sm">Fortschritt: {{ this.progress }} %</div>
       <progress-bar :options="options" :value="this.progress"
       ></progress-bar>
     </div>
@@ -38,6 +38,8 @@ const addToDoURL = 'http://localhost:3000/lists/addTodo',
     deleteToDoURL = 'http://localhost:3000/lists/deleteTodo',
     getTodoListURL = 'http://localhost:3000/lists/getTodoList';
 
+const synth = window.speechSynthesis;
+
 export default {
   components: {
     ProgressBar
@@ -51,6 +53,7 @@ export default {
   computed: {},
   data: function () {
     return {
+      app: this.$parent.$parent.$parent.$parent,
       progress: 0,
       options: {
         text: {
@@ -85,12 +88,19 @@ export default {
   activated() {
     this.countCheckedTodos(this.mutatedTodoList._id);
   },
+  mounted() {
+  },
   methods: {
     async getTodoList(todoList) {
       await axios.get(getTodoListURL + "/" + todoList._id).then(res => {
         this.mutatedTodoList = res.data;
       }).catch(error => {
-        console.log(error)
+        console.log(error);
+        if (this.app.soundOn) {
+          let getTodoListSpeech = new SpeechSynthesisUtterance('Fehler beim Laden der Todo-Liste.');
+          getTodoListSpeech.lang = 'de-DE';
+          synth.speak(getTodoListSpeech);
+        }
       });
     },
     async addTodo(todoList) {
@@ -101,23 +111,38 @@ export default {
       this.newTodoValue = '';
       await axios.post(addToDoURL + "/" + todoList._id, todo)
           .then((response) => {
-            console.log(response);
             this.mutatedTodoList.todos.push(todo);
+            if (this.app.soundOn) {
+              let addTodoSpeech = new SpeechSynthesisUtterance('Das Todo ' + todo.content + ' wurde der Todo-Liste ' + todoList.title + ' hinzugefügt.');
+              addTodoSpeech.lang = 'de-DE';
+              synth.speak(addTodoSpeech);
+            }
           })
           .catch((error) => {
+            let addTodoErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Hinzufügen des Todos.');
+            addTodoErrorSpeech.lang = 'de-DE';
+
             if (error.response) {
               console.log(error.response);
+              if (this.app.soundOn) {
+                synth.speak(addTodoErrorSpeech);
+              }
             } else if (error.request) {
               console.log(error.request);
+              if (this.app.soundOn) {
+                synth.speak(addTodoErrorSpeech);
+              }
             } else if (error.message) {
               console.log(error.message);
+              if (this.app.soundOn) {
+                synth.speak(addTodoErrorSpeech);
+              }
             }
           });
       this.countCheckedTodos(this.mutatedTodoList._id);
-      this.getTodoList(todoList);
+      await this.getTodoList(todoList);
     },
-    updateTodo(todoListId, todo, nameChanged, isChecked, val) {
-      console.log("val is: ", val);
+    updateTodo(todoListId, todo, nameChanged, isChecked) {
       todo.done = isChecked;
       if (nameChanged === true) {
         todo.content = this.newTodoValue;
@@ -125,15 +150,30 @@ export default {
       this.newTodoValue = '';
       axios.patch(updateToDoURL + "/" + todo._id, todo)
           .then((response) => {
-            console.log(response);
+            if (this.app.soundOn) {
+              let updateTodoSpeech = new SpeechSynthesisUtterance('Das Todo wurde aktualisiert.');
+              updateTodoSpeech.lang = 'de-DE';
+              synth.speak(updateTodoSpeech);
+            }
           })
           .catch((error) => {
+            let updateTodoErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Aktualisieren des Todos.');
+            updateTodoErrorSpeech.lang = 'de-DE';
             if (error.response) {
               console.log(error.response);
+              if (this.app.soundOn) {
+                synth.speak(updateTodoErrorSpeech);
+              }
             } else if (error.request) {
               console.log(error.request);
+              if (this.app.soundOn) {
+                synth.speak(updateTodoErrorSpeech);
+              }
             } else if (error.message) {
               console.log(error.message);
+              if (this.app.soundOn) {
+                synth.speak(updateTodoErrorSpeech);
+              }
             }
           });
       this.countCheckedTodos(todoListId);
@@ -147,14 +187,29 @@ export default {
         axios.delete(deleteToDoURL + "/" + todo._id, {
           data: todo
         }).then((response) => {
-          console.log(response);
+          if (this.app.soundOn) {
+            let deleteTodoSpeech = new SpeechSynthesisUtterance('Das Todo ' + todo.content + 'wurde gelöscht .');
+            deleteTodoSpeech.lang = 'de-DE';
+            synth.speak(deleteTodoSpeech);
+          }
         }).catch((error) => {
+          let deleteTodoErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Löschen des Todos.');
+          deleteTodoErrorSpeech.lang = 'de-DE';
           if (error.response) {
             console.log(error.response);
+            if (this.app.soundOn) {
+              synth.speak(deleteTodoErrorSpeech);
+            }
           } else if (error.request) {
             console.log(error.request);
+            if (this.app.soundOn) {
+              synth.speak(deleteTodoErrorSpeech);
+            }
           } else if (error.message) {
             console.log(error.message);
+            if (this.app.soundOn) {
+              synth.speak(deleteTodoErrorSpeech);
+            }
           }
         });
       }
@@ -169,6 +224,7 @@ export default {
       } else {
         this.progress = Math.round(100 / checkboxes * checked);
       }
+      this.$parent.$parent.countTodos();
     }
   },
 };
