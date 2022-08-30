@@ -17,9 +17,11 @@
             class="flex flex-col bg-gray-100 rounded-lg px-3 pt-6 pb-2 column-width rounded mr-4 list"
         >
           <label :for="list._id" class="text-gray-700 font-semibold font-sans tracking-wide text-sm">Liste </label>
-          <label-edit :id="list._id" :pkey="list._id" :text="list.title" placeholder="Kein Titel"
-                      tabindex="0" v-bind:text="list.title"
-                      v-on:text-updated-blur="updateList(list, $event)"></label-edit>
+          <h1 :aria-label="list.title">
+            <label-edit :id="list._id" :pkey="list._id" :text="list.title" placeholder="Kein Titel"
+                        tabindex="0" v-bind:text="list.title"
+                        v-on:text-updated-blur="updateList(list, $event)"></label-edit>
+          </h1>
 
           <draggable :animation="200" :list="list.tasks" ghost-class="ghost-card" group="tasks"
                      @change="updateLists">

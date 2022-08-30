@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="mb-8 mt-1">
-      <div class="text-sm">Fortschritt: {{ this.progress }} %</div>
-      <progress-bar :options="options" :value="this.progress"
+      <div aria-hidden="false" class="text-sm">Fortschritt: {{ this.progress }} %</div>
+      <progress-bar :options="options" :value="this.progress" aria-hidden="true"
       ></progress-bar>
     </div>
     <ul v-for="todo in mutatedTodoList.todos" :id="'todolist-' + mutatedTodoList._id">

@@ -4,7 +4,7 @@
       <div class="modal-wrapper" @click="$emit('close')">
         <div class="modal-container" @click.stop>
           <div class="modal-header mb-2">
-            <h1 class="font-semibold text-xl task-title">
+            <h1 :aria-label="task.title" class="font-semibold text-xl task-title">
               <label-edit :pkey="task._id" :placeholder="task.title" :text="task.title"
                           tabindex="0" v-bind:text="task.title"
                           v-on:text-updated-blur="updateTask(task, $event, null)"></label-edit>
@@ -166,9 +166,9 @@ export default {
       targetList.tasks.push(task);
       currentList.tasks.splice(this.lists.find(list => list._id == currentListId).tasks.indexOf(task), 1);
 
-      this.task.list = targetListId;
+      task.list = targetListId;
 
-      this.updateTask(this.task, null, null);
+      this.updateTask(task, null, null);
 
       this.app.updateLists(this.lists);
 
