@@ -1,14 +1,14 @@
 <template>
-  <div :value="list._id" class="bg-white shadow rounded px-3 pt-3 pb-5 border border-white" tabindex="0"
+  <div :value="list._id" class="card bg-white shadow rounded px-3 pt-3 pb-5 border border-white" tabindex="0"
        @keydown.enter="showModal = true" @keydown.esc="showModal = false">
 
     <keep-alive>
-      <Modal :list="list" :lists="lists" :show="showModal" :task="task" tabindex="-1"
+      <Modal :card="card" :list="list" :lists="lists" :show="showModal" tabindex="-1"
              @close="showModal = false"/>
     </keep-alive>
     <div aria-hidden="false" @click="showModal = true">
       <div class="flex justify-between">
-        <p class="text-gray-700 font-semibold font-sans tracking-wide text-sm">{{ task.title }}</p>
+        <p class="card__title text-gray-700 font-sans tracking-wide text-sm">{{ card.title }}</p>
         <img alt="Avatar"
              aria-hidden="true"
              class="w-6 h-6 rounded-full ml-3" src="https://placeimg.com/90/60/people" tabindex="-1">
@@ -28,18 +28,16 @@
   </div>
 </template>
 <script>
-import Badge from "./Badge.vue";
 import Modal from './Modal.vue';
 import {PhCheckSquare} from "phosphor-vue";
 
 export default {
   components: {
-    Badge,
     Modal,
     PhCheckSquare
   },
   props: {
-    task: {
+    card: {
       type: Object,
       default: () => ({})
     },
@@ -51,18 +49,6 @@ export default {
       type: Array,
       default: () => ({})
     },
-  },
-  computed: {
-    badgeColor() {
-      const mappings = {
-        Design: "purple",
-        "Feature Request": "teal",
-        Backend: "blue",
-        QA: "green",
-        default: "teal"
-      };
-      return mappings[this.task.type] || mappings.default;
-    }
   },
   data() {
     return {
@@ -78,7 +64,7 @@ export default {
   methods: {
     countTodos() {
       this.todoLists = [];
-      this.task.todoLists.forEach((tdl) => {
+      this.card.todoLists.forEach((tdl) => {
         this.todoLists.push(tdl);
       });
 
@@ -107,3 +93,6 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+@import '../assets/styles/card.scss';
+</style>

@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const {List} = require('../models/Lists');
-const {Task} = require('../models/Tasks');
-const {TodoList} = require("../models/TodoLists");
-const {Todo} = require("../models/Todos");
+const {List} = require('../models/List');
+const {Card} = require('../models/Card');
+const {TodoList} = require("../models/Todolist");
+const {Todo} = require("../models/Todo");
 
 // Get all lists
 router.get('/', async (req, res) => {
     const lists = await List.find().populate({
-        path: 'tasks',
-        model: Task,
+        path: 'cards',
+        model: Card,
         populate: [{
             path: 'todoLists',
             model: TodoList,
@@ -36,13 +36,13 @@ router.post('/new', async (req, res) => {
 router.delete('/delete/:id', async (req, res) => {
     const result = await List.deleteOne({_id: req.params.id}).then(async () => {
 
-        await Task.find({list: req.params.id}).then(async (tasksData) => {
-            for (const tk of tasksData) {
-                await Task.deleteMany({list: req.params.id});
+        await Card.find({list: req.params.id}).then(async (cardsData) => {
+            for (const tk of cardsData) {
+                await Card.deleteMany({list: req.params.id});
 
-                await TodoList.find({task: tk.id}).then(async (todoListsData) => {
+                await TodoList.find({card: tk.id}).then(async (todoListsData) => {
                     for (const tl of todoListsData) {
-                        await TodoList.deleteMany({task: tk.id});
+                        await TodoList.deleteMany({card: tk.id});
 
                         await Todo.find({todoList: tl.id}).then(async (todosData) => {
                             for (const td of todosData) {
@@ -63,19 +63,19 @@ router.patch('/update/:id', async (req, res) => {
     res.json(q);
 });
 
-// Add a task to a list
-router.post("/addTask/:id", (req, res) => {
+// Add a card to a list
+router.post("/addCard/:id", (req, res) => {
 
     List.findById(req.params.id, async function (err, result) {
         if (!err) {
             if (!result) {
                 res.sendStatus(404).send('List was not found').end();
             } else {
-                let newTask = new Task(req.body);
-                newTask.list = req.params.id;
-                await newTask.save();
-                result.tasks.push(newTask._id);
-                result.markModified('tasks');
+                let newCard = new Card(req.body);
+                newCard.list = req.params.id;
+                await newCard.save();
+                result.cards.push(newCard._id);
+                result.markModified('cards');
                 result.save(function (saveerr, saveresult) {
                     if (!saveerr) {
                         res.status(200).send(saveresult);
@@ -90,18 +90,18 @@ router.post("/addTask/:id", (req, res) => {
     });
 });
 
-// Update a task
-router.patch('/updateTask/:id', async (req, res) => {
-    const q = await Task.updateOne({_id: req.params.id}, {$set: req.body});
+// Update a card
+router.patch('/updateCard/:id', async (req, res) => {
+    const q = await Card.updateOne({_id: req.params.id}, {$set: req.body});
     res.json(q);
 });
 
-// Delete a task
-router.delete('/deleteTask/:id', async (req, res) => {
-    const result = await Task.deleteOne({_id: req.params.id}).then(async () => {
-        await TodoList.find({task: req.params.id}).then(async (todoListsData) => {
+// Delete a card
+router.delete('/deleteCard/:id', async (req, res) => {
+    const result = await Card.deleteOne({_id: req.params.id}).then(async () => {
+        await TodoList.find({card: req.params.id}).then(async (todoListsData) => {
             for (const tl of todoListsData) {
-                await TodoList.deleteMany({task: req.params.id});
+                await TodoList.deleteMany({card: req.params.id});
 
                 await Todo.find({todoList: tl.id}).then(async (todosData) => {
                     for (const td of todosData) {
@@ -114,19 +114,19 @@ router.delete('/deleteTask/:id', async (req, res) => {
     res.json(result);
 });
 
-// Add a todolist to a task
+// Add a todolist to a card
 router.post("/addTodoList/:id", (req, res) => {
 
-    Task.findById(req.params.id, async function (err, result) {
+    Card.findById(req.params.id, async function (err, result) {
         if (!err) {
             if (!result) {
-                res.sendStatus(404).send('Task was not found').end();
+                res.sendStatus(404).send('Card was not found').end();
             } else {
                 let newTodoList = new TodoList(req.body);
-                newTodoList.task = req.params.id;
+                newTodoList.card = req.params.id;
                 await newTodoList.save();
                 result.todoLists.push(newTodoList._id);
-                result.markModified('tasks');
+                result.markModified('cards');
                 result.save(function (saveerr, saveresult) {
                     if (!saveerr) {
                         res.status(200).send(saveresult);
@@ -170,13 +170,13 @@ router.post("/addTodo/:id", (req, res) => {
     TodoList.findById(req.params.id, async function (err, result) {
         if (!err) {
             if (!result) {
-                res.sendStatus(404).send('Task was not found').end();
+                res.sendStatus(404).send('Card was not found').end();
             } else {
                 let newTodo = new Todo(req.body);
                 newTodo.todoList = req.params.id;
                 await newTodo.save();
                 result.todos.push(newTodo._id);
-                result.markModified('tasks');
+                result.markModified('cards');
                 result.save(function (saveerr, saveresult) {
                     if (!saveerr) {
                         res.status(200).send(saveresult);

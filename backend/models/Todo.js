@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
-const TodosSchema = new mongoose.Schema({
+const TodoSchema = new mongoose.Schema({
     content: String,
     done: {type: Boolean, default: false},
     todoList: mongoose.Schema.Types.ObjectId
 });
 
-module.exports.todosSchema = TodosSchema;
-module.exports.Todo = mongoose.model('todo', TodosSchema);
+module.exports.todoSchema = TodoSchema;
+module.exports.Todo = mongoose.model('todo', TodoSchema);

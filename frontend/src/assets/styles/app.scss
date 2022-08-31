@@ -21,18 +21,18 @@ input[type="checkbox"] {
             &input {
                 padding: 17px 10px;
                 border-radius: 5px;
-                border-color: $primary;
-                outline: $primary;
+                border-color: $secondary;
+                outline: $secondary;
             }
 
             &link {
-                border-bottom-color: $primary;
-                color: $primary;
+                border-bottom-color: $secondary;
+                color: $secondary;
                 font-size: 14px;
                 font-style: normal;
 
                 &:hover {
-                    color: $secondary;
+                    color: $primary;
                 }
             }
 
@@ -80,10 +80,17 @@ input[type="checkbox"] {
 }
 
 .list {
-    min-width: 280px;
+    width: 280px;
+
+    &__ {
+        &title {
+            color: $secondary;
+        }
+    }
 }
 
-.add-task-buttons {
+.add-card,
+.add-list {
     .vue-quick-edit {
         &__ {
 

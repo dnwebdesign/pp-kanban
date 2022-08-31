@@ -16,28 +16,28 @@
             :key="list.title"
             class="flex flex-col bg-gray-100 rounded-lg px-3 pt-6 pb-2 column-width rounded mr-4 list"
         >
-          <label :for="list._id" class="text-gray-700 font-semibold font-sans tracking-wide text-sm">Liste </label>
-          <h1 :aria-label="list.title">
+          <label :for="list._id" class="text-gray-700 font-semibold font-sans tracking-wide text-sm">Liste</label>
+          <h1 :aria-label="list.title" class="list__title font-semibold">
             <label-edit :id="list._id" :pkey="list._id" :text="list.title" placeholder="Kein Titel"
                         tabindex="0" v-bind:text="list.title"
                         v-on:text-updated-blur="updateList(list, $event)"></label-edit>
           </h1>
 
-          <draggable :animation="200" :list="list.tasks" ghost-class="ghost-card" group="tasks"
-                     @change="updateLists">
-            <task-card
-                v-for="task in list.tasks"
-                :key="task.id"
+          <draggable :animation="200" :list="list.cards" ghost-class="ghost-card" group="cards"
+                     @change="updateLists(lists)">
+            <card
+                v-for="card in list.cards"
+                :key="card.id"
+                :card="card"
                 :list="list"
                 :lists="lists"
-                :task="task"
-                :todos="task.todos"
+                :todos="card.todos"
                 class="mt-3 cursor-move"
-            ></task-card>
+            ></card>
           </draggable>
-          <quick-edit v-model="newTaskValue" buttonCancelText="Abbrechen" buttonOkText="Karte speichern"
-                      class="mt-3 add-task-buttons"
-                      @input="addTask(list)">
+          <quick-edit v-model="newCardValue" buttonCancelText="Abbrechen" buttonOkText="Karte speichern"
+                      class="mt-3 mb-10 add-card"
+                      @input="addCard(list)">
             Karte hinzufügen
           </quick-edit>
           <button class="inline text-sm link-delete mt-auto ml-auto" @click="deleteList(list)">Liste löschen</button>
@@ -58,7 +58,7 @@
 <script lang="ts">
 import './assets/styles/tailwind.css';
 import draggable from "vuedraggable";
-import TaskCard from "./components/TaskCard.vue";
+import Card from "./components/Card.vue";
 import axios from "axios";
 import LabelEdit from 'label-edit';
 import QuickEdit from 'vue-quick-edit';
@@ -71,7 +71,7 @@ const listsURL = 'http://localhost:3000/lists',
     newURL = 'http://localhost:3000/lists/new',
     updateURL = 'http://localhost:3000/lists/update',
     deleteURL = 'http://localhost:3000/lists/delete',
-    addTaskURL = 'http://localhost:3000/lists/addTask';
+    addCardURL = 'http://localhost:3000/lists/addCard';
 
 const synth = window.speechSynthesis;
 
@@ -80,14 +80,14 @@ export default {
   name: "App",
   components: {
     draggable,
-    TaskCard,
+    Card,
     LabelEdit,
     PhBookOpen,
   },
   data() {
     return {
       lists: [],
-      newTaskValue: "",
+      newCardValue: "",
       newListValue: "",
       soundOn: false,
     };
@@ -154,6 +154,7 @@ export default {
               let addListSpeech = new SpeechSynthesisUtterance('Die neue Liste ' + list.title + " wurde angelegt.");
               addListSpeech.lang = 'de-DE';
               synth.speak(addListSpeech);
+              this.newListValue = '';
             }
           })
           .catch((error) => {
@@ -165,26 +166,27 @@ export default {
             }
           });
     },
-    addTask(list) {
-      let task = {
-        title: this.newTaskValue,
+    addCard(list) {
+      let card = {
+        title: this.newCardValue,
         description: "",
       };
-      axios.post(addTaskURL + "/" + list._id, task)
+      axios.post(addCardURL + "/" + list._id, card)
           .then((response) => {
             this.getLists();
             if (this.soundOn) {
-              let addTaskSpeech = new SpeechSynthesisUtterance('Die neue Karte ' + task.title + " wurde zur Liste " + list.title + " hinzugefügt.");
-              addTaskSpeech.lang = 'de-DE';
-              synth.speak(addTaskSpeech);
+              let addCardSpeech = new SpeechSynthesisUtterance('Die neue Karte ' + card.title + " wurde zur Liste " + list.title + " hinzugefügt.");
+              addCardSpeech.lang = 'de-DE';
+              synth.speak(addCardSpeech);
+              this.newCardValue = '';
             }
           })
           .catch((error) => {
             console.log(error);
             if (this.soundOn) {
-              let addTaskErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Erstellen der Karte.');
-              addTaskErrorSpeech.lang = 'de-DE';
-              synth.speak(addTaskErrorSpeech);
+              let addCardErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Erstellen der Karte.');
+              addCardErrorSpeech.lang = 'de-DE';
+              synth.speak(addCardErrorSpeech);
             }
           });
     },
@@ -256,14 +258,14 @@ export default {
       window.addEventListener('keydown', (event) => {
         if (event.altKey && event.key == 'ArrowRight') {
           let listId = event.target.attributes['value'].value,
-              task = event.target.__vue__.task;
+              card = event.target.__vue__.card;
           this.lists.forEach(async (list, li) => {
             if (list._id == listId) {
-              this.lists[li + 1].tasks.push(task);
-              this.lists[li].tasks.splice(this.lists[li].tasks.indexOf(task), 1);
+              this.lists[li + 1].cards.push(card);
+              this.lists[li].cards.splice(this.lists[li].cards.indexOf(card), 1);
 
               if (this.soundOn) {
-                let cardMovedSpeech = new SpeechSynthesisUtterance('Die Karte ' + task.title + ' wurde von der Liste ' + this.lists[li].title + ' in die Liste ' + this.lists[li + 1].title + ' verschoben.');
+                let cardMovedSpeech = new SpeechSynthesisUtterance('Die Karte ' + card.title + ' wurde von der Liste ' + this.lists[li].title + ' in die Liste ' + this.lists[li + 1].title + ' verschoben.');
                 cardMovedSpeech.lang = 'de-DE';
                 synth.speak(cardMovedSpeech);
               }
@@ -274,14 +276,14 @@ export default {
 
         if (event.altKey && event.key == 'ArrowLeft') {
           let listId = event.target.attributes.value.value,
-              task = event.target.__vue__.task;
+              card = event.target.__vue__.card;
           this.lists.forEach(async (list, li) => {
             if (list._id == listId) {
-              this.lists[li - 1].tasks.push(task);
-              this.lists[li].tasks.splice(this.lists[li].tasks.indexOf(task), 1);
+              this.lists[li - 1].cards.push(card);
+              this.lists[li].cards.splice(this.lists[li].cards.indexOf(card), 1);
 
               if (this.soundOn) {
-                let cardMovedSpeech = new SpeechSynthesisUtterance('Die Karte ' + task.title + ' wurde von der Liste ' + this.lists[li].title + ' in die Liste ' + this.lists[li - 1].title + ' verschoben.');
+                let cardMovedSpeech = new SpeechSynthesisUtterance('Die Karte ' + card.title + ' wurde von der Liste ' + this.lists[li].title + ' in die Liste ' + this.lists[li - 1].title + ' verschoben.');
                 cardMovedSpeech.lang = 'de-DE';
                 synth.speak(cardMovedSpeech);
               }

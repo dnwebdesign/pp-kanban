@@ -1,0 +1,9 @@
+@import "variables";
+
+.card {
+    &__ {
+        &title {
+            color: $primary;
+        }
+    }
+}

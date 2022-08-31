@@ -61,11 +61,11 @@
     transform: scale(1.1);
 }
 
-.task-title {
+.card-title {
     color: $primary;
 }
 
-.task-in-list {
+.card-in-list {
     color: $secondary;
 }
 
@@ -78,7 +78,15 @@
     }
 }
 
-.task-description {
-    border: 1px solid #ccc;
+.card-description {
+    min-height: 100px;
     resize: none;
+}
+
+.todolist {
+    &__ {
+        &title {
+            color: $primary;
+        }
+    }
 }

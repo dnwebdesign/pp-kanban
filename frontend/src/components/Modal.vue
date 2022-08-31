@@ -4,39 +4,42 @@
       <div class="modal-wrapper" @click="$emit('close')">
         <div class="modal-container" @click.stop>
           <div class="modal-header mb-2">
-            <h1 :aria-label="task.title" class="font-semibold text-xl task-title">
-              <label-edit :pkey="task._id" :placeholder="task.title" :text="task.title"
-                          tabindex="0" v-bind:text="task.title"
-                          v-on:text-updated-blur="updateTask(task, $event, null)"></label-edit>
+            <h1 :aria-label="card.title" class="font-semibold text-xl card-title">
+              <label-edit :pkey="card._id" :placeholder="card.title" :text="card.title"
+                          tabindex="0" v-bind:text="card.title"
+                          v-on:text-updated-blur="updateCard(card, $event, null)"></label-edit>
             </h1>
-            <div class="text-sm font-medium task-in-list">in Liste <span class="italic">{{ list.title }}</span></div>
+            <div class="text-sm font-medium card-in-list">in Liste <span class="font-bold italic">{{
+                list.title
+              }}</span>
+            </div>
           </div>
           <div class="modal-body">
-            <label :for="'lists-selection' + task._id" class="inline mb-2 text-sm">Verschieben
+            <label :for="'lists-selection' + card._id" class="inline mb-2 text-sm">Verschieben
               nach: </label>
-            <select :id="'lists-selection' + task._id"
-                    class="lists-selection mb-6 bg-gray-100 italic border border-gray-300 text-gray-900 text-sm rounded-lg inline py-0.5 px-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                    @change="moveCard(task, $event.target.value)">
+            <select :id="'lists-selection' + card._id"
+                    class="lists-selection mb-6 bg-gray-100 italic border border-gray-200 text-gray-900 text-sm rounded-lg inline py-0.5 px-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                    @change="moveCard(card, $event.target.value)">
               <option disabled selected value> -- Ziel auswählen --</option>
-              <option v-for="list in lists" v-if="list._id != task.list" :value="list._id">
+              <option v-for="list in lists" v-if="list._id != card.list" :value="list._id">
                 {{ list.title }}
               </option>
             </select>
 
-            <label :for="'task-description' + task._id" class="block text-sm">Beschreibung:</label>
-            <textarea :id="'task-description' + task._id"
-                      class="task-description rounded-lg p-2 mb-6"
-                      @change="updateTask(task, null, $event.target.value)">{{ task.description }}</textarea>
+            <label :for="'card-description' + card._id" class="block text-sm">Beschreibung:</label>
+            <textarea :id="'card-description' + card._id"
+                      class="card-description rounded-lg p-2 border border-gray-200 mb-4 w-full min-h-fit"
+                      @change="updateCard(card, null, $event.target.value)">{{ card.description }}</textarea>
 
-            <quick-edit v-model="newTodolistValue" buttonCancelText="Abbrechen" buttonOkText="Speichern" class="mb-6"
-                        @input="addTodoList(task)">
+            <quick-edit v-model="newTodolistValue" buttonCancelText="Abbrechen" buttonOkText="Speichern" class="mb-4"
+                        @input="addTodoList(card)">
               Todo-Liste hinzufügen
             </quick-edit>
 
-            <div v-for="todoList in task.todoLists"
-                 class="block p-4 max-w bg-white rounded-lg border border-gray-200 mb-4">
+            <div v-for="todoList in card.todoLists"
+                 class="todolist block p-4 max-w bg-white rounded-lg border border-gray-200 mb-4">
               <span class="text-sm block">Todo-Liste</span>
-              <h2 class="text-xl inline mr-3">{{ todoList.title }}</h2>
+              <h2 class="todolist__title text-xl inline mr-3 font-semibold">{{ todoList.title }}</h2>
               <quick-edit v-model="newTodolistValue" buttonCancelText="Abbrechen" buttonOkText="Speichern"
                           class="inline"
                           @input="updateTodoList(todoList)">
@@ -44,7 +47,7 @@
               </quick-edit>
               <button class="inline text-sm link-delete" @click="deleteTodoList(todoList)">Löschen</button>
               <keep-alive>
-                <to-dos :key="todoList._id" :todoList="todoList"></to-dos>
+                <TodoList :key="todoList._id" :todoList="todoList"></TodoList>
               </keep-alive>
             </div>
           </div>
@@ -58,7 +61,7 @@
 
             <button
                 class="block modal-default-button mt-3 text-black py-1 px-3 rounded btn-delete"
-                @click="deleteTask(task)"
+                @click="deleteCard(card)"
             >Karte löschen
             </button>
           </div>
@@ -69,12 +72,12 @@
 </template>
 
 <script>
-import ToDos from './ToDos';
+import TodoList from './TodoList';
 import axios from "axios"
 import LabelEdit from 'label-edit';
 
-const updateTaskURL = 'http://localhost:3000/lists/updateTask',
-    deleteTaskURL = 'http://localhost:3000/lists/deleteTask',
+const updateCardURL = 'http://localhost:3000/lists/updateCard',
+    deleteCardURL = 'http://localhost:3000/lists/deleteCard',
     addToDoListURL = 'http://localhost:3000/lists/addTodoList',
     updateToDoListURL = 'http://localhost:3000/lists/updateTodoList',
     deleteToDoListURL = 'http://localhost:3000/lists/deleteTodoList';
@@ -83,7 +86,7 @@ const synth = window.speechSynthesis;
 
 export default {
   components: {
-    ToDos,
+    TodoList,
     LabelEdit,
   },
   data() {
@@ -91,13 +94,13 @@ export default {
       app: this.$parent.$parent.$parent,
       todoLists: [],
       newTodolistValue: '',
-      newTaskTitleValue: '',
-      newTaskDescriptionValue: '',
+      newCardTitleValue: '',
+      newCardDescriptionValue: '',
     };
   },
   props: {
     show: Boolean,
-    task: {
+    card: {
       type: Object,
       default: () => ({})
     },
@@ -153,86 +156,86 @@ export default {
 
   },
   methods: {
-    moveCard(task, targetListId) {
+    moveCard(card, targetListId) {
       let currentListId = '',
           currentList = [],
           targetList = [];
 
-      currentListId = task.list;
+      currentListId = card.list;
 
       currentList = this.lists.find(list => list._id === currentListId);
       targetList = this.lists.find(list => list._id === targetListId);
 
-      targetList.tasks.push(task);
-      currentList.tasks.splice(this.lists.find(list => list._id == currentListId).tasks.indexOf(task), 1);
+      targetList.cards.push(card);
+      currentList.cards.splice(this.lists.find(list => list._id === currentListId).cards.indexOf(card), 1);
 
-      task.list = targetListId;
+      card.list = targetListId;
 
-      this.updateTask(task, null, null);
+      this.updateCard(card, null, null);
 
       this.app.updateLists(this.lists);
 
       if (this.app.soundOn) {
-        let cardMovedSpeech = new SpeechSynthesisUtterance('Die Karte ' + task.title + ' wurde von der Liste "' + currentList.title + '" in die Liste ' + targetList.title + ' verschoben.');
+        let cardMovedSpeech = new SpeechSynthesisUtterance('Die Karte ' + card.title + ' wurde von der Liste "' + currentList.title + '" in die Liste ' + targetList.title + ' verschoben.');
         cardMovedSpeech.lang = 'de-DE';
         synth.speak(cardMovedSpeech);
       }
     },
-    updateTask(task, taskTitle, taskDescription) {
-      let oldTitle = task.title;
-      if (taskTitle != null) {
-        task.title = taskTitle;
+    updateCard(card, cardTitle, cardDescription) {
+      let oldTitle = card.title;
+      if (cardTitle != null) {
+        card.title = cardTitle;
       }
-      if (taskDescription != null) {
-        task.description = taskDescription;
+      if (cardDescription != null) {
+        card.description = cardDescription;
       }
-      axios.patch(updateTaskURL + "/" + task._id, task)
+      axios.patch(updateCardURL + "/" + card._id, card)
           .then((response) => {
             console.log(response);
             this.app.getLists();
-            if (taskTitle != null && this.app.soundOn) {
-              let updateTaskTitleSpeech = new SpeechSynthesisUtterance('Die Karte ' + oldTitle + ' wurde in ' + task.title + ' umbenannt.');
-              updateTaskTitleSpeech.lang = 'de-DE';
-              synth.speak(updateTaskTitleSpeech);
+            if (cardTitle != null && this.app.soundOn) {
+              let updateCardTitleSpeech = new SpeechSynthesisUtterance('Die Karte ' + oldTitle + ' wurde in ' + card.title + ' umbenannt.');
+              updateCardTitleSpeech.lang = 'de-DE';
+              synth.speak(updateCardTitleSpeech);
             }
-            if (taskDescription != null && this.app.soundOn) {
-              let updateTaskDescSpeech = new SpeechSynthesisUtterance('Die Beschreibung der Karte ' + task.title + ' wurde aktualisiert.');
-              updateTaskDescSpeech.lang = 'de-DE';
-              synth.speak(updateTaskDescSpeech);
+            if (cardDescription != null && this.app.soundOn) {
+              let updateCardDescSpeech = new SpeechSynthesisUtterance('Die Beschreibung der Karte ' + card.title + ' wurde aktualisiert.');
+              updateCardDescSpeech.lang = 'de-DE';
+              synth.speak(updateCardDescSpeech);
             }
           })
           .catch((error) => {
-            let updateTaskErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Aktualisieren der Karte.');
-            updateTaskErrorSpeech.lang = 'de-DE';
+            let updateCardErrorSpeech = new SpeechSynthesisUtterance('Fehler beim Aktualisieren der Karte.');
+            updateCardErrorSpeech.lang = 'de-DE';
             if (error.response) {
               console.log(error.response);
               if (this.app.soundOn) {
-                synth.speak(updateTaskErrorSpeech);
+                synth.speak(updateCardErrorSpeech);
               }
             } else if (error.request) {
               console.log(error.request);
               if (this.app.soundOn) {
-                synth.speak(updateTaskErrorSpeech);
+                synth.speak(updateCardErrorSpeech);
               }
             } else if (error.message) {
               console.log(error.message);
               if (this.app.soundOn) {
-                synth.speak(updateTaskErrorSpeech);
+                synth.speak(updateCardErrorSpeech);
               }
             }
           });
     },
-    deleteTask(task) {
-      if (confirm("Willst du die Karte " + task.title + " wirklich löschen? Achtung: Dadurch werden auch alle Daten auf der Karte wie Beschreibung, Todo-Listen und so weiter gelöscht.")) {
-        const indexOfObject = this.list.tasks.findIndex(object => {
+    deleteCard(card) {
+      if (confirm("Willst du die Karte " + card.title + " wirklich löschen? Achtung: Dadurch werden auch alle Daten auf der Karte wie Beschreibung, Todo-Listen und so weiter gelöscht.")) {
+        const indexOfObject = this.list.cards.findIndex(object => {
           return object._id === this.list._id;
         });
-        this.list.tasks.splice(indexOfObject, 1);
-        axios.delete(deleteTaskURL + "/" + task._id)
+        this.list.cards.splice(indexOfObject, 1);
+        axios.delete(deleteCardURL + "/" + card._id)
             .then((response) => {
               this.app.updateLists(this.lists);
               if (this.app.soundOn) {
-                let deleteCardSpeech = new SpeechSynthesisUtterance('Die Karte ' + task.title + " wurde gelöscht.");
+                let deleteCardSpeech = new SpeechSynthesisUtterance('Die Karte ' + card.title + " wurde gelöscht.");
                 deleteCardSpeech.lang = 'de-DE';
                 synth.speak(deleteCardSpeech);
               }
@@ -259,15 +262,15 @@ export default {
             });
       }
     },
-    addTodoList(task) {
+    addTodoList(card) {
       let todoList = {
         title: this.newTodolistValue,
       };
-      axios.post(addToDoListURL + "/" + task._id, todoList)
+      axios.post(addToDoListURL + "/" + card._id, todoList)
           .then((response) => {
             this.app.getLists();
             if (this.app.soundOn) {
-              let addTodoListSpeech = new SpeechSynthesisUtterance('Die Todo-Liste ' + todoList.title + ' wurde der Karte "' + task.title + ' hinzugefügt.');
+              let addTodoListSpeech = new SpeechSynthesisUtterance('Die Todo-Liste ' + todoList.title + ' wurde der Karte "' + card.title + ' hinzugefügt.');
               addTodoListSpeech.lang = 'de-DE';
               synth.speak(addTodoListSpeech);
             }
@@ -329,10 +332,10 @@ export default {
     },
     deleteTodoList(todoList) {
       if (confirm("Willst du die Todo-Liste " + todoList.title + " wirklich löschen? Achtung: Dadurch werden auch alle To-Dos in der Todo-Liste gelöscht.")) {
-        const indexOfObject = this.task.todoLists.findIndex(object => {
+        const indexOfObject = this.card.todoLists.findIndex(object => {
           return object._id === todoList._id;
         });
-        this.task.todoLists.splice(indexOfObject, 1);
+        this.card.todoLists.splice(indexOfObject, 1);
         axios.delete(deleteToDoListURL + "/" + todoList._id, todoList)
             .then((response) => {
               if (this.app.soundOn) {
