@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-8 mt-1">
-      <div aria-hidden="false" class="text-sm">Fortschritt: {{ this.progress }} %</div>
+      <div :aria-label="'Fortschritt: '+this.progress+' %'" aria-hidden="false" class="text-sm"></div>
       <progress-bar :options="options" :value="this.progress" aria-hidden="true"
       ></progress-bar>
     </div>
