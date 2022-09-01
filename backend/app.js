@@ -2,12 +2,14 @@ const express = require("express")
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
 const cors = require("cors")
+const dotenv = require('dotenv')
 // create our express app
 const app = express()
 
-// database
+dotenv.config()
 
-const uri = "mongodb+srv://pp-kanban-db:a%5E%40VJCG7kM%24I!79FBRg2%24N%40be*pp@cluster0.mllen.mongodb.net/pp-kanban";
+// database
+const uri = process.env.mongodb_uri;
 mongoose.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
