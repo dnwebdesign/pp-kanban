@@ -167,7 +167,7 @@ export default {
       targetList = this.lists.find(list => list._id === targetListId);
 
       targetList.cards.push(card);
-      currentList.cards.splice(this.lists.find(list => list._id === currentListId).cards.indexOf(card), 1);
+      currentList.cards.splice(currentList.cards.indexOf(card), 1);
 
       card.list = targetListId;
 
