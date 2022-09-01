@@ -26,9 +26,7 @@ router.get('/', async (req, res) => {
 // Create new list
 router.post('/new', async (req, res) => {
     const newList = new List(req.body);
-
     const savedList = await newList.save();
-
     res.json(savedList);
 });
 
@@ -65,7 +63,6 @@ router.patch('/update/:id', async (req, res) => {
 
 // Add a card to a list
 router.post("/addCard/:id", (req, res) => {
-
     List.findById(req.params.id, async function (err, result) {
         if (!err) {
             if (!result) {
@@ -116,7 +113,6 @@ router.delete('/deleteCard/:id', async (req, res) => {
 
 // Add a todolist to a card
 router.post("/addTodoList/:id", (req, res) => {
-
     Card.findById(req.params.id, async function (err, result) {
         if (!err) {
             if (!result) {
@@ -166,7 +162,6 @@ router.delete('/deleteTodoList/:id', async (req, res) => {
 
 // Add a todo to a todolist
 router.post("/addTodo/:id", (req, res) => {
-
     TodoList.findById(req.params.id, async function (err, result) {
         if (!err) {
             if (!result) {
@@ -200,7 +195,7 @@ router.patch('/updateTodo/:id', async (req, res) => {
 // Delete a todo
 router.delete('/deleteTodo/:id', async (req, res) => {
     const result = await Todo.findByIdAndDelete({_id: req.params.id});
-    const todolist = await TodoList.updateOne(
+    await TodoList.updateOne(
         {_id: req.body.todoList},
         {
             $pull: {
@@ -208,7 +203,6 @@ router.delete('/deleteTodo/:id', async (req, res) => {
             }
         }
     );
-
     res.json(result);
 });
 
