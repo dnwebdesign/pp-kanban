@@ -1,5 +1,18 @@
-# Entwicklung eines barrierefreien Kanban-Boards
-## Praxisprojekt an der Technischen Hochschule Köln
-### ausgearbeitet von Luca de Nitto im Studiengang Medieninformatik
+# Development of an accessible Kanban board
+## Practical project at the Cologne University of Applied Sciences
+### developed by Luca de Nitto in the course of studies media informatics
 
-Dieses Projekt soll zu Forschungszwecken und zur Veranschaulichung eines barrierefreien Kanban-Boards dienen und eine Basis für Weiter- und Eigenentwicklung darstellen.
+This project is intended for research purposes, to illustrate an accessible Kanban board and to provide a basis for further development.
+
+#### Frontend setup
+```npm install```
+##### Compiles and hot-reloads for development
+```npm run serve```
+##### Compiles and minifies for production
+```npm run build```
+
+
+#### Backend setup
+```npm install```
+##### Compiles and hot-reloads for development
+```npm run start```
