@@ -17,7 +17,7 @@ This project is intended for research purposes, to illustrate an accessible Kanb
 ### Switch to backend root directory and install modules
 ```cd backend```\
 ```npm install```
-### Create an .env file in the backend root directory and put your mongodb connection string in it
+### Create an .env file in the root directory and put your mongodb connection string in it
 #### Content of .env file:
 ```mongodb_uri = your_mongodb_connection_string```
 ### Compiles and hot-reloads for development
