@@ -4,7 +4,7 @@
       <div class="modal-wrapper" @click="$emit('close')">
         <div class="modal-container" @click.stop>
           <div class="modal-header mb-2">
-            <h1 :aria-label="card.title" class="font-semibold text-xl card-title">
+            <h1 :aria-label="card.title + ': Klicke zum Bearbeiten'" class="font-semibold text-xl card-title">
               <label-edit :pkey="card._id" :placeholder="card.title" :text="card.title"
                           tabindex="0" v-bind:text="card.title"
                           v-on:text-updated-blur="updateCard(card, $event, null)"></label-edit>

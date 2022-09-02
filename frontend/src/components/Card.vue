@@ -1,5 +1,6 @@
 <template>
-  <div :value="list._id" class="card bg-white shadow rounded px-3 pt-3 pb-5 border border-white" tabindex="0"
+  <div :aria-label="card.title + ': Schaltfläche'" :value="list._id"
+       class="card bg-white shadow rounded px-3 pt-3 pb-5 border border-white" tabindex="0"
        @keydown.enter="showModal = true" @keydown.esc="showModal = false">
 
     <keep-alive>
