@@ -28,7 +28,9 @@
 
             <label :for="'card-description' + card._id" class="block text-sm">Beschreibung:</label>
             <textarea :id="'card-description' + card._id"
+                      aria-placeholder="Eine detaillierte Beschreibung der Karte hinzufügen..."
                       class="card-description rounded-lg p-2 border border-gray-200 mb-4 w-full min-h-fit"
+                      placeholder="Eine detaillierte Beschreibung der Karte hinzufügen..."
                       @change="updateCard(card, null, $event.target.value)">{{ card.description }}</textarea>
 
             <quick-edit v-model="newTodolistValue" buttonCancelText="Abbrechen" buttonOkText="Speichern" class="mb-4"
