@@ -196,7 +196,7 @@ export default {
           .then((response) => {
             console.log(response);
             this.app.getLists();
-            if (cardTitle != null && this.app.soundOn) {
+            if (cardTitle != null && cardTitle != oldTitle && this.app.soundOn) {
               let updateCardTitleSpeech = new SpeechSynthesisUtterance('Die Karte ' + oldTitle + ' wurde in ' + card.title + ' umbenannt.');
               updateCardTitleSpeech.lang = 'de-DE';
               synth.speak(updateCardTitleSpeech);

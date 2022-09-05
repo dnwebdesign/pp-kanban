@@ -204,7 +204,7 @@ export default {
       }
       axios.patch(updateURL + "/" + list._id, list)
           .then((response) => {
-            if (listTitle != null && this.soundOn) {
+            if (listTitle != null && listTitle != oldTitle && this.soundOn) {
               let updateListSpeech = new SpeechSynthesisUtterance('Die Liste ' + oldTitle + ' wurde in ' + list.title + ' umbenannt.');
               updateListSpeech.lang = 'de-DE';
               synth.speak(updateListSpeech);

@@ -61,7 +61,11 @@
 
 .card-title,
 .card-in-list {
-    color: $secondary;
+    color: $primary;
+
+    .vlabeledit-label {
+        color: $secondary;
+    }
 }
 
 .lists-selection {
