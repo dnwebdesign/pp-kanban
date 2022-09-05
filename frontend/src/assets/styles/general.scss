@@ -6,6 +6,11 @@
             border-bottom: 1px dashed $delete;
             color: $delete;
             line-height: 1.2;
+
+            &:hover {
+                border-bottom: 1px dashed $hover;
+                color: $hover;
+            }
         }
     }
 }
@@ -13,7 +18,14 @@
 .btn {
     &- {
         &delete {
-            background-color: $delete;
+            background-color: $secondary;
+            color: $delete;
+
+            &:hover {
+                border: 1px solid $secondary;
+                background-color: $primary;
+                color: $secondary;
+            }
         }
     }
 }

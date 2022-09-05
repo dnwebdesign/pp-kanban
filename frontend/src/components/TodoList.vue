@@ -10,7 +10,7 @@
         <input :id="'todolist-'+todo._id" v-model="todo.done" :checked="todo.done"
                class="w-4 h-4"
                type="checkbox" @click="updateTodo(mutatedTodoList._id, todo, false, $event.target.checked)">
-        <label :for="'todolist-'+todo._id" class="ml-1 mr-2 cursor-pointer">{{ todo.content }}</label>
+        <label :for="'todolist-'+todo._id" class="ml-1 mr-2 cursor-pointer todo-label">{{ todo.content }}</label>
         <div class="todo-buttons inline-block">
           <quick-edit v-model="newTodoValue" buttonCancelText="Abbrechen" buttonOkText="Speichern" class="inline"
                       @input="updateTodo(mutatedTodoList._id, todo, true, todo.done, $event.target)"
@@ -66,8 +66,8 @@ export default {
           hideText: false
         },
         progress: {
-          color: '#29a3a3',
-          backgroundColor: '#a33987',
+          color: '#333',
+          backgroundColor: '#999',
           inverted: false
         },
         layout: {

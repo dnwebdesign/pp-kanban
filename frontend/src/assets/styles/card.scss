@@ -3,7 +3,11 @@
 .card {
     &__ {
         &title {
-            color: $primary;
+            color: $secondary;
         }
+    }
+
+    &:hover {
+        background-color: $hover;
     }
 }

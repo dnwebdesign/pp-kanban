@@ -1,6 +1,6 @@
 <template>
   <div :aria-label="card.title + ': Schaltfläche'" :value="list._id"
-       class="card bg-white shadow rounded px-3 pt-3 pb-5 border border-white" tabindex="0"
+       class="card bg-black shadow rounded px-3 pt-3 pb-5" tabindex="0"
        @keydown.enter="showModal = true" @keydown.esc="showModal = false">
 
     <keep-alive>
@@ -15,7 +15,7 @@
              class="w-6 h-6 rounded-full ml-3" src="https://placeimg.com/90/60/people" tabindex="-1">
       </div>
       <div class="flex mt-4 justify-between items-center">
-        <div v-if="totalTodos != 0" id="todosProgress" class="text-sm">
+        <div v-if="totalTodos != 0" id="todosProgress" class="text-sm text-white">
           <PhCheckSquare aria-hidden="true" class="inline mr-1"/>
           <span :aria-label="checkedTodos + ' von ' + totalTodos + ' Todos erledigt.'" aria-hidden="false">
             <span aria-hidden="true">{{

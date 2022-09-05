@@ -2,13 +2,15 @@
   <div id="app">
     <div class="flex flex-col items-center">
       <div class="mt-4 py-4 bg-gray-100 rounded-lg px-3 flex leading-none">
-        <button aria-hidden="false" class="mr-4 hover:cursor-pointer focus:outline outline-2" @click="this.readManual">
+        <button aria-hidden="false" class="mr-4 hover:cursor-pointer focus:outline outline-2 btn-manual"
+                @click="this.readManual">
           <PhBookOpen aria-hidden="true" class="inline"/>
           Handbuch vorlesen
         </button>
-        <input id="turnSoundOn" alt="Sound aktivieren" class="w-4 h-4 mr-1 hover:cursor-pointer" type="checkbox"
+        <input id="turnSoundOn" alt="Sound aktivieren" class="w-4 h-4 mr-1 hover:cursor-pointer"
+               type="checkbox"
                @change="toggleSound"/>
-        <label class="hover:cursor-pointer" for="turnSoundOn">Sprachausgabe aktivieren</label>
+        <label class="hover:cursor-pointer input-sound" for="turnSoundOn">Sprachausgabe aktivieren</label>
       </div>
       <div class="flex pt-4 pb-2">
         <div

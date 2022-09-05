@@ -10,7 +10,15 @@ input[type="checkbox"] {
 
     &:hover {
         cursor: pointer;
-        accent-color: $secondary;
+        accent-color: $hover;
+    }
+}
+
+.input-sound,
+.btn-manual,
+.todo-label {
+    &:hover {
+        color: $hover;
     }
 }
 
@@ -21,18 +29,18 @@ input[type="checkbox"] {
             &input {
                 padding: 17px 10px;
                 border-radius: 5px;
-                border-color: $secondary;
-                outline: $secondary;
+                border-color: $primary;
+                outline: $primary;
             }
 
             &link {
-                border-bottom-color: $secondary;
-                color: $secondary;
+                border-bottom-color: $primary;
+                color: $primary;
                 font-size: 14px;
                 font-style: normal;
 
                 &:hover {
-                    color: $primary;
+                    color: $hover;
                 }
             }
 
@@ -43,7 +51,7 @@ input[type="checkbox"] {
                 border-radius: 5px;
                 border-color: $primary;
                 background-color: $primary;
-                color: #fff;
+                color: $secondary;
 
                 &--cancel {
                     margin-right: 10px;
@@ -84,7 +92,7 @@ input[type="checkbox"] {
 
     &__ {
         &title {
-            color: $secondary;
+            color: $primary;
         }
     }
 }
@@ -93,6 +101,12 @@ input[type="checkbox"] {
 .add-list {
     .vue-quick-edit {
         &__ {
+
+            &link {
+                &:hover {
+                    color: $hover;
+                }
+            }
 
             &input {
                 display: block;
@@ -112,6 +126,8 @@ input[type="checkbox"] {
                 }
             }
         }
+
+
     }
 }
 
@@ -126,6 +142,10 @@ input[type="checkbox"] {
             &__ {
                 &link {
                     border-bottom: none;
+
+                    &:hover {
+                        color: $hover;
+                    }
                 }
             }
         }

@@ -15,7 +15,7 @@
             </div>
           </div>
           <div class="modal-body">
-            <label :for="'lists-selection' + card._id" class="inline mb-2 text-sm">Verschieben
+            <label :for="'lists-selection' + card._id" class="inline text-white mb-2 text-sm">Verschieben
               nach: </label>
             <select :id="'lists-selection' + card._id"
                     class="lists-selection mb-6 bg-gray-100 italic border border-gray-200 text-gray-900 text-sm rounded-lg inline py-0.5 px-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
@@ -26,14 +26,15 @@
               </option>
             </select>
 
-            <label :for="'card-description' + card._id" class="block text-sm">Beschreibung:</label>
+            <label :for="'card-description' + card._id" class="block text-sm text-white">Beschreibung:</label>
             <textarea :id="'card-description' + card._id"
                       aria-placeholder="Eine detaillierte Beschreibung der Karte hinzufügen..."
                       class="card-description rounded-lg p-2 border border-gray-200 mb-4 w-full min-h-fit"
                       placeholder="Eine detaillierte Beschreibung der Karte hinzufügen..."
                       @change="updateCard(card, null, $event.target.value)">{{ card.description }}</textarea>
 
-            <quick-edit v-model="newTodolistValue" buttonCancelText="Abbrechen" buttonOkText="Speichern" class="mb-4"
+            <quick-edit v-model="newTodolistValue" buttonCancelText="Abbrechen" buttonOkText="Speichern"
+                        class="mb-4 add-todolist"
                         @input="addTodoList(card)">
               Todo-Liste hinzufügen
             </quick-edit>
@@ -56,13 +57,13 @@
 
           <div class="modal-footer mt-3">
             <button
-                class="block modal-default-button mt-3 text-black py-1 px-3 rounded"
+                class="block modal-default-button mt-3 py-1 px-3 rounded"
                 @click="$emit('close')"
             >Zurück zum Board
             </button>
 
             <button
-                class="block modal-default-button mt-3 text-black py-1 px-3 rounded btn-delete"
+                class="block modal-default-button mt-3 py-1 px-3 rounded btn-delete"
                 @click="deleteCard(card)"
             >Karte löschen
             </button>
