@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     readManual() {
-      let manualSpeech = new SpeechSynthesisUtterance('Willkommen im Kanban-Board! Hinweise zur Bedienung: Mit dem Schalter "Sprachausgabe" oder dem Tastaturkürzel Alt+S+Aufwärtspfeil können Sie die Sprachausgabe für Aktionen aktivieren oder deaktivieren. Mit den Tastaturkürzeln Alt+Rechtspfeil beziehungsweise Alt+Linkspfeil können Sie eine ausgewählte Karte in die nächste beziehungsweise vorherige Liste verschieben.');
+      let manualSpeech = new SpeechSynthesisUtterance('Willkommen im Kanban-Board! Hinweise zur Bedienung: Mit dem Schalter "Sprachausgabe" oder dem Tastaturkürzel Alt+S+Aufwärtspfeil können Sie die Sprachausgabe aktivieren oder deaktivieren. Mit den Tastaturkürzeln Alt+Rechtspfeil beziehungsweise Alt+Linkspfeil können Sie eine ausgewählte Karte in die nächste beziehungsweise vorherige Liste verschieben. Mit der Tabulator-Taste können Sie durch die Steuerelemente navigieren. Mit Tabulator + Shift navigieren Sie zurück. Ende des Bedienhandbuchs.');
       manualSpeech.lang = 'de-DE';
       synth.speak(manualSpeech);
     },
